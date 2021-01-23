@@ -1,0 +1,6 @@
+
+extract the AMBA 4 AXI4, AXI4-Lite, and AXI4-Stream Protocol, (BP063-BU-01000-r0p1-00rel0.tgz), into this directory.
+
+goto https://silver.arm.com/browse/BP063 to download. requires
+an free account to login. 
+
