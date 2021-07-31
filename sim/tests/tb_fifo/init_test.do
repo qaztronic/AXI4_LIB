@@ -26,9 +26,7 @@ radix -hexadecimal
 make_lib work "rebuild"
 
 sim_compile_lib $env(LIB_TB_BASE)
-sim_compile_lib $env(LIB_AXI4_LIB)
 
 vlog -f ./files.f
-vlog -f ./$env(AXI4_LIB_DIR)/sim/src/BP063-BU-01000-r0p1-00rel0/files.f
 
 sim_run_sim
