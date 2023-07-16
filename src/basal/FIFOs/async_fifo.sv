@@ -31,7 +31,7 @@
 module
   cummings_sync_r2w
   #(
-    parameter ADDRSIZE = 4
+    parameter ADDRSIZE
   )
   (
     output reg [ADDRSIZE:0] wq2_rptr,
@@ -56,7 +56,7 @@ endmodule
 module
   cummings_sync_w2r
   #(
-    parameter ADDRSIZE = 4
+    parameter ADDRSIZE
   )
   (
     output reg  [ADDRSIZE:0]  rq2_wptr,
@@ -81,8 +81,8 @@ endmodule
 module
   cummings_fifomem
   #(
-    parameter DATASIZE = 8,   // Memory data word width
-    parameter ADDRSIZE = 4    // Number of mem address bits
+    parameter DATASIZE,   // Memory data word width
+    parameter ADDRSIZE    // Number of mem address bits
   )
   (
     output [DATASIZE-1:0] rdata,
@@ -111,7 +111,7 @@ endmodule
 module
   cummings_rptr_empty
   #(
-    parameter ADDRSIZE = 4
+    parameter ADDRSIZE
   )
   (
     output reg                  rempty,
@@ -159,7 +159,7 @@ endmodule
 module
   cummings_wptr_full
   #(
-    parameter ADDRSIZE = 4
+    parameter ADDRSIZE
   )
   (
     output reg                  wfull,
@@ -208,8 +208,8 @@ endmodule
 module
   cummings_fifo1
   #(
-    parameter DSIZE = 8,
-    parameter ASIZE = 4
+    parameter DSIZE,
+    parameter ASIZE
   )
   (
     output [DSIZE-1:0]  rdata,
@@ -227,10 +227,10 @@ module
   wire [ASIZE-1:0] waddr, raddr;
   wire [ASIZE:0] wptr, rptr, wq2_rptr, rq2_wptr;
 
-  cummings_sync_r2w sync_r2w (.wq2_rptr(wq2_rptr), .rptr(rptr),
+  cummings_sync_r2w #(ASIZE) sync_r2w (.wq2_rptr(wq2_rptr), .rptr(rptr),
   .wclk(wclk), .wrst_n(wrst_n));
 
-  cummings_sync_w2r sync_w2r (.rq2_wptr(rq2_wptr), .wptr(wptr),
+  cummings_sync_w2r #(ASIZE) sync_w2r (.rq2_wptr(rq2_wptr), .wptr(wptr),
   .rclk(rclk), .rrst_n(rrst_n));
 
   cummings_fifomem #(DSIZE, ASIZE) fifomem
