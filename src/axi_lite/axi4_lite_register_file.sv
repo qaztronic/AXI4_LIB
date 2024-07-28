@@ -28,10 +28,10 @@
 module
   axi4_lite_register_file
   #(
-    A,  //  address bus width, must be 32 or greater for axi lite
-    N,  //  data bus width in bytes, must be 4 or 8 for axi lite
-    I = 1,  //  ID width
-    MW  //  mux select width
+    A=0,  //  address bus width, must be 32 or greater for axi lite
+    N=0,  //  data bus width in bytes, must be 4 or 8 for axi lite
+    I=0,  //  ID width
+    MW=0  //  mux select width
   )
   (
     axi4_if               axi4_s,

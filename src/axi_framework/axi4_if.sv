@@ -29,8 +29,8 @@
 interface
   axi4_if
   #(
-    A,  // address bus width
-    N,  // data bus width in bytes
+    A=0,  // address bus width
+    N=0,  // data bus width in bytes
     I=1 // ID width
   )
   (
@@ -82,276 +82,276 @@ interface
 
 // --------------------------------------------------------------------
 // synthesis translate_off
-  clocking cb_s @(posedge aclk);
-    input   arid;
-    input   araddr;
-    input   arburst;
-    input   arcache;
-    input   awid;
-    input   arlen;
-    input   arlock;
-    input   arprot;
-    input   arqos;
-    output  arready;
-    input   arregion;
-    input   arsize;
-    input   arvalid;
-    input   awaddr;
-    input   awburst;
-    input   awcache;
-    input   awlen;
-    input   awlock;
-    input   awprot;
-    input   awqos;
-    output  awready;
-    input   awregion;
-    input   awsize;
-    input   awvalid;
-    input   bready;
-    output  bid;
-    output  bresp;
-    output  bvalid;
-    output  rdata;
-    output  rid;
-    output  rlast;
-    input   rready;
-    output  rresp;
-    output  rvalid;
-    input   wdata;
-    input   wid;
-    input   wlast;
-    output  wready;
-    input   wstrb;
-    input   wvalid;
-    input   aresetn;
-    input   aclk;
-  endclocking
+  // clocking cb_s @(posedge aclk);
+    // input   arid;
+    // input   araddr;
+    // input   arburst;
+    // input   arcache;
+    // input   awid;
+    // input   arlen;
+    // input   arlock;
+    // input   arprot;
+    // input   arqos;
+    // output  arready;
+    // input   arregion;
+    // input   arsize;
+    // input   arvalid;
+    // input   awaddr;
+    // input   awburst;
+    // input   awcache;
+    // input   awlen;
+    // input   awlock;
+    // input   awprot;
+    // input   awqos;
+    // output  awready;
+    // input   awregion;
+    // input   awsize;
+    // input   awvalid;
+    // input   bready;
+    // output  bid;
+    // output  bresp;
+    // output  bvalid;
+    // output  rdata;
+    // output  rid;
+    // output  rlast;
+    // input   rready;
+    // output  rresp;
+    // output  rvalid;
+    // input   wdata;
+    // input   wid;
+    // input   wlast;
+    // output  wready;
+    // input   wstrb;
+    // input   wvalid;
+    // // input   aresetn;
+    // // input   aclk;
+  // endclocking
 
 
-  // --------------------------------------------------------------------
-  //
-  default clocking cb_m @(posedge aclk);
-    output  arid;
-    output  araddr;
-    output  arburst;
-    output  arcache;
-    output  awid;
-    output  arlen;
-    output  arlock;
-    output  arprot;
-    output  arqos;
-    input   arready;
-    output  arregion;
-    output  arsize;
-    output  arvalid;
-    output  awaddr;
-    output  awburst;
-    output  awcache;
-    output  awlen;
-    output  awlock;
-    output  awprot;
-    output  awqos;
-    input   awready;
-    output  awregion;
-    output  awsize;
-    output  awvalid;
-    output  bready;
-    input   bid;
-    input   bresp;
-    input   bvalid;
-    input   rdata;
-    input   rid;
-    input   rlast;
-    output  rready;
-    input   rresp;
-    input   rvalid;
-    output  wdata;
-    output  wid;
-    output  wlast;
-    input   wready;
-    output  wstrb;
-    output  wvalid;
-    input   aresetn;
-    input   aclk;
-  endclocking
-// synthesis translate_on
-// --------------------------------------------------------------------
+  // // --------------------------------------------------------------------
+  // //
+  // clocking cb_m @(posedge aclk);
+    // output  arid;
+    // output  araddr;
+    // output  arburst;
+    // output  arcache;
+    // output  awid;
+    // output  arlen;
+    // output  arlock;
+    // output  arprot;
+    // output  arqos;
+    // input   arready;
+    // output  arregion;
+    // output  arsize;
+    // output  arvalid;
+    // output  awaddr;
+    // output  awburst;
+    // output  awcache;
+    // output  awlen;
+    // output  awlock;
+    // output  awprot;
+    // output  awqos;
+    // input   awready;
+    // output  awregion;
+    // output  awsize;
+    // output  awvalid;
+    // output  bready;
+    // input   bid;
+    // input   bresp;
+    // input   bvalid;
+    // input   rdata;
+    // input   rid;
+    // input   rlast;
+    // output  rready;
+    // input   rresp;
+    // input   rvalid;
+    // output  wdata;
+    // output  wid;
+    // output  wlast;
+    // input   wready;
+    // output  wstrb;
+    // output  wvalid;
+    // // input   aresetn;
+    // // input   aclk;
+  // endclocking
+// // synthesis translate_on
+// // --------------------------------------------------------------------
 
 
-  // --------------------------------------------------------------------
-  //
-`ifdef USE_MOD_PORTS
-  // --------------------------------------------------------------------
-  //
-    modport
-      slave
-      (
-// --------------------------------------------------------------------
-// synthesis translate_off
-        clocking  cb_s,
-// synthesis translate_on
-// --------------------------------------------------------------------
-        input   arid,
-        input   araddr,
-        input   arburst,
-        input   arcache,
-        input   awid,
-        input   arlen,
-        input   arlock,
-        input   arprot,
-        input   arqos,
-        output  arready,
-        input   arregion,
-        input   arsize,
-        input   arvalid,
-        input   awaddr,
-        input   awburst,
-        input   awcache,
-        input   awlen,
-        input   awlock,
-        input   awprot,
-        input   awqos,
-        output  awready,
-        input   awregion,
-        input   awsize,
-        input   awvalid,
-        input   bready,
-        output  bid,
-        output  bresp,
-        output  bvalid,
-        output  rdata,
-        output  rid,
-        output  rlast,
-        input   rready,
-        output  rresp,
-        output  rvalid,
-        input   wdata,
-        input   wid,
-        input   wlast,
-        output  wready,
-        input   wstrb,
-        input   wvalid,
-        input   aresetn,
-        input   aclk
-      );
+  // // --------------------------------------------------------------------
+  // //
+// `ifdef USE_MOD_PORTS
+  // // --------------------------------------------------------------------
+  // //
+    // modport
+      // slave
+      // (
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+        // clocking  cb_s,
+// // synthesis translate_on
+// // --------------------------------------------------------------------
+        // input   arid,
+        // input   araddr,
+        // input   arburst,
+        // input   arcache,
+        // input   awid,
+        // input   arlen,
+        // input   arlock,
+        // input   arprot,
+        // input   arqos,
+        // output  arready,
+        // input   arregion,
+        // input   arsize,
+        // input   arvalid,
+        // input   awaddr,
+        // input   awburst,
+        // input   awcache,
+        // input   awlen,
+        // input   awlock,
+        // input   awprot,
+        // input   awqos,
+        // output  awready,
+        // input   awregion,
+        // input   awsize,
+        // input   awvalid,
+        // input   bready,
+        // output  bid,
+        // output  bresp,
+        // output  bvalid,
+        // output  rdata,
+        // output  rid,
+        // output  rlast,
+        // input   rready,
+        // output  rresp,
+        // output  rvalid,
+        // input   wdata,
+        // input   wid,
+        // input   wlast,
+        // output  wready,
+        // input   wstrb,
+        // input   wvalid,
+        // input   aresetn,
+        // input   aclk
+      // );
 
 
-  // --------------------------------------------------------------------
-  //
-    modport
-      master
-      (
-// --------------------------------------------------------------------
-// synthesis translate_off
-        clocking  cb_m,
-// synthesis translate_on
-// --------------------------------------------------------------------
-        output  arid,
-        output  araddr,
-        output  arburst,
-        output  arcache,
-        output  awid,
-        output  arlen,
-        output  arlock,
-        output  arprot,
-        output  arqos,
-        input   arready,
-        output  arregion,
-        output  arsize,
-        output  arvalid,
-        output  awaddr,
-        output  awburst,
-        output  awcache,
-        output  awlen,
-        output  awlock,
-        output  awprot,
-        output  awqos,
-        input   awready,
-        output  awregion,
-        output  awsize,
-        output  awvalid,
-        output  bready,
-        input   bid,
-        input   bresp,
-        input   bvalid,
-        input   rdata,
-        input   rid,
-        input   rlast,
-        output  rready,
-        input   rresp,
-        input   rvalid,
-        output  wdata,
-        output  wlast,
-        input   wready,
-        output  wstrb,
-        output  wvalid,
-        input   aresetn,
-        input   aclk
-      );
-`endif
+  // // --------------------------------------------------------------------
+  // //
+    // modport
+      // master
+      // (
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+        // clocking  cb_m,
+// // synthesis translate_on
+// // --------------------------------------------------------------------
+        // output  arid,
+        // output  araddr,
+        // output  arburst,
+        // output  arcache,
+        // output  awid,
+        // output  arlen,
+        // output  arlock,
+        // output  arprot,
+        // output  arqos,
+        // input   arready,
+        // output  arregion,
+        // output  arsize,
+        // output  arvalid,
+        // output  awaddr,
+        // output  awburst,
+        // output  awcache,
+        // output  awlen,
+        // output  awlock,
+        // output  awprot,
+        // output  awqos,
+        // input   awready,
+        // output  awregion,
+        // output  awsize,
+        // output  awvalid,
+        // output  bready,
+        // input   bid,
+        // input   bresp,
+        // input   bvalid,
+        // input   rdata,
+        // input   rid,
+        // input   rlast,
+        // output  rready,
+        // input   rresp,
+        // input   rvalid,
+        // output  wdata,
+        // output  wlast,
+        // input   wready,
+        // output  wstrb,
+        // output  wvalid,
+        // input   aresetn,
+        // input   aclk
+      // );
+// `endif
 
 
-// --------------------------------------------------------------------
-// synthesis translate_off
-  task
-    zero_cycle_delay;
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+  // task
+    // zero_cycle_delay;
 
-    ##0;
+    // ##0;
 
-  endtask: zero_cycle_delay
-// synthesis translate_on
-// --------------------------------------------------------------------
+  // endtask: zero_cycle_delay
+// // synthesis translate_on
+// // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
-  typedef struct packed {
-    logic [(A-1):0]    addr;
-  } axi4_lite_ar_s;
+  // // --------------------------------------------------------------------
+  // typedef struct packed {
+    // logic [(A-1):0]    addr;
+  // } axi4_lite_ar_s;
     
-  typedef struct packed {
-    logic [(A-1):0]    addr;
-  } axi4_lite_aw_s;
+  // typedef struct packed {
+    // logic [(A-1):0]    addr;
+  // } axi4_lite_aw_s;
     
-  typedef struct packed {
-    logic [1:0]        resp;
-  } axi4_lite_b_s;
+  // typedef struct packed {
+    // logic [1:0]        resp;
+  // } axi4_lite_b_s;
     
-  typedef struct packed {
-    logic [(8*N)-1:0]  data;
-    logic [1:0]        resp;
-  } axi4_lite_r_s;
+  // typedef struct packed {
+    // logic [(8*N)-1:0]  data;
+    // logic [1:0]        resp;
+  // } axi4_lite_r_s;
     
-  typedef struct packed {
-    logic [(8*N)-1:0]  data;
-    logic [N-1:0]      strb;
-  } axi4_lite_w_s;
+  // typedef struct packed {
+    // logic [(8*N)-1:0]  data;
+    // logic [N-1:0]      strb;
+  // } axi4_lite_w_s;
   
-  // --------------------------------------------------------------------
-  axi4_lite_ar_s ar;
-  assign ar.addr = araddr;
-  wire [$bits(axi4_lite_ar_s)-1:0] ar_flat;
-  assign ar_flat = ar;
+  // // --------------------------------------------------------------------
+  // axi4_lite_ar_s ar;
+  // assign ar.addr = araddr;
+  // wire [$bits(axi4_lite_ar_s)-1:0] ar_flat;
+  // assign ar_flat = ar;
   
-  axi4_lite_aw_s aw;
-  assign aw.addr = awaddr;
-  wire [$bits(axi4_lite_aw_s)-1:0] aw_flat;
-  assign aw_flat = aw;
+  // axi4_lite_aw_s aw;
+  // assign aw.addr = awaddr;
+  // wire [$bits(axi4_lite_aw_s)-1:0] aw_flat;
+  // assign aw_flat = aw;
   
-  axi4_lite_b_s b;
-  assign b.resp = bresp;
-  wire [$bits(axi4_lite_b_s)-1:0] b_flat;
-  assign b_flat = b;
+  // axi4_lite_b_s b;
+  // assign b.resp = bresp;
+  // wire [$bits(axi4_lite_b_s)-1:0] b_flat;
+  // assign b_flat = b;
   
-  axi4_lite_r_s r;
-  assign r.data = rdata;
-  assign r.resp = rresp;
-  wire [$bits(axi4_lite_r_s)-1:0] r_flat;
-  assign r_flat = r;
+  // axi4_lite_r_s r;
+  // assign r.data = rdata;
+  // assign r.resp = rresp;
+  // wire [$bits(axi4_lite_r_s)-1:0] r_flat;
+  // assign r_flat = r;
   
-  axi4_lite_w_s w;
-  assign w.data = wdata;
-  assign w.strb = wstrb;
-  wire [$bits(axi4_lite_w_s)-1:0] w_flat;
-  assign w_flat = w;
+  // axi4_lite_w_s w;
+  // assign w.data = wdata;
+  // assign w.strb = wstrb;
+  // wire [$bits(axi4_lite_w_s)-1:0] w_flat;
+  // assign w_flat = w;
 
 // --------------------------------------------------------------------
 endinterface

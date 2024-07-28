@@ -17,10 +17,10 @@
 // --------------------------------------------------------------------
 
 module axi4_lite_fanout
-#( int A
-,  int N
-,  bit [A-1:0] M
-,  int I = 1
+#( int         A=0
+,  int         N=0
+,  int         I=0
+,  bit [A-1:0] M=0
 )
 ( axi4_if axi4_s
 , axi4_if axi4_m[2]
@@ -28,11 +28,11 @@ module axi4_lite_fanout
 , input   aresetn
 );
   // --------------------------------------------------------------------
-  axi4_lite_fanout_wr #(A, N, M, I)
+  axi4_lite_fanout_wr #(A, N, I, M)
     axi4_lite_fanout_wr_i(.*);
 
   // --------------------------------------------------------------------
-  axi4_lite_fanout_rd #(A, N, M, I)
+  axi4_lite_fanout_rd #(A, N, I, M)
     axi4_lite_fanout_rd_i(.*);
 
 // --------------------------------------------------------------------

@@ -16,7 +16,7 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_default_slave #(A, N, I=1, D='hbaadc0de)
+module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
 ( axi4_if axi4_s
 , input   aclk
 , input   aresetn
@@ -39,16 +39,16 @@ module axi4_lite_default_slave #(A, N, I=1, D='hbaadc0de)
   always_comb
     case(w_state)
       IDLE:     if(axi4_s.awvalid & axi4_s.wvalid)
-                  w_next_state <= VALID;
+                  w_next_state = VALID;
                 else
-                  w_next_state <= IDLE;
+                  w_next_state = IDLE;
 
       VALID:  if(axi4_s.bready)
-                  w_next_state <= IDLE;
+                  w_next_state = IDLE;
                 else
-                  w_next_state <= VALID;
+                  w_next_state = VALID;
 
-      default:  w_next_state <= IDLE;
+      default:  w_next_state = IDLE;
     endcase
 
   //---------------------------------------------------
@@ -77,16 +77,16 @@ module axi4_lite_default_slave #(A, N, I=1, D='hbaadc0de)
   always_comb
     case(r_state)
       IDLE:     if(axi4_s.arvalid)
-                  r_next_state <= VALID;
+                  r_next_state = VALID;
                 else
-                  r_next_state <= IDLE;
+                  r_next_state = IDLE;
 
       VALID:    if(axi4_s.rready)
-                  r_next_state <= IDLE;
+                  r_next_state = IDLE;
                 else
-                  r_next_state <= VALID;
+                  r_next_state = VALID;
 
-      default:  r_next_state <= IDLE;
+      default:  r_next_state = IDLE;
     endcase
 
   // --------------------------------------------------------------------

@@ -29,8 +29,8 @@
 interface
   axi4_lite_register_if
   #(
-    N   = 8,      //  data bus width in bytes, must be 4 or 8 for axi lite
-    MW  = 3,      //  mux select width
+    N   = 0,      //  data bus width in bytes, must be 4 or 8 for axi lite
+    MW  = 0,      //  mux select width
     MI  = 2 ** MW //  mux inputs
   );
 
