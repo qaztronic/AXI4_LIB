@@ -51,7 +51,7 @@ module top;
   // --------------------------------------------------------------------
    initial
    begin
-    #1ms;
+    #10us;
     $warning("[%10t] Timeout!...", $time);
     $finish;
    end
@@ -79,29 +79,36 @@ module top;
 
     // ........................................................................
     da_0 = new[8];
-    randomize(da_0);
+    // randomize(da_0);
+    foreach(da_0[i]) da_0[i] = $urandom;
 
     foreach(da_0[i])
-      axi4_lite_write(i*4, da_0[i]);
+      axi4_lite_write(16'(i*4), da_0[i]);
 
     da_1 = new[8];
-    randomize(da_1);
+    // randomize(da_1);
+    foreach(da_1[i]) da_1[i] = $urandom;
 
     foreach(da_1[i])
-      axi4_lite_write(M + (i*4), da_1[i]);
+      axi4_lite_write(16'(M + (i*4)), da_1[i]);
 
     foreach(da_0[i])
     begin
-      axi4_lite_read(i*4, data);
+      axi4_lite_read(16'(i*4), data);
       if(data != da_0[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, i*4);
     end
 
     foreach(da_1[i])
     begin
-      axi4_lite_read(M + (i*4), data);
+      axi4_lite_read(16'(M + (i*4)), data);
       if(data != da_1[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, M + (i*4));
     end
 
+    // ........................................................................
+    foreach(da_0[i]) da_0[i] = $urandom;
+    foreach(da_1[i]) da_1[i] = $urandom;
+    
+    
     // ........................................................................
     $display("[%10t] Test done!...", $time);
     $finish;
