@@ -29,8 +29,8 @@
 module
   recursive_mux
   #(
-    A,  // mux select width
-    W, // data width
+    A=0,  // mux select width
+    W=0, // data width
     D = 2 ** A
   )
   (

@@ -16,7 +16,7 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module tiny_sync_fifo #(W)
+module tiny_sync_fifo #(W=0)
 ( output  reg       wr_full
 , input   [W-1:0]   wr_data
 , input             wr_en

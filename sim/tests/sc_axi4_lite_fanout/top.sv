@@ -39,7 +39,7 @@ module top;
   assign r_if[0].register_in = r_if[0].register_out;
   assign r_if[1].register_in = r_if[1].register_out;
 
-  axi4_lite_fanout #(A, N, I, M)
+  axi4_lite_fanout #(A, N, M, I)
     dut(.*);
 
   axi4_lite_register_file #(A, N, I, MW)
@@ -49,26 +49,64 @@ module top;
     reg_file_1(.axi4_s(axi4_m[1]), .r_if(r_if[1]), .*);
 
   // --------------------------------------------------------------------
-  bit [    A-1:0] addr;
-  bit [(N*8)-1:0] data;
-
    initial
    begin
-      $display("[%10t] Model running...", $time);
-
-      repeat(4) @(posedge aclk);
-      aresetn = 1;
-      $display("[%10t] reset deasserted...", $time);
-
-      repeat(8) @(posedge aclk);
-
-      axi4_lite_read ('h04, data       );
-      axi4_lite_write('h04, 'habba_beef);
-      axi4_lite_read ('h04, data       );
-
-      $display("[%10t] Test done!...", $time);
-      $finish;
+    #1ms;
+    $warning("[%10t] Timeout!...", $time);
+    $finish;
    end
+
+  // --------------------------------------------------------------------
+  bit [    A-1:0] addr;
+  bit [(N*8)-1:0] data;
+  bit [(N*8)-1:0] da_0[];
+  bit [(N*8)-1:0] da_1[];
+
+  initial
+  begin
+    // ........................................................................
+    $display("[%10t] Model running...", $time);
+
+    repeat(4) @(posedge aclk);
+    aresetn = 1;
+    $display("[%10t] reset deasserted...", $time);
+
+    repeat(8) @(posedge aclk);
+
+    axi4_lite_read ('h04, data       );
+    axi4_lite_write('h04, 'habba_beef);
+    axi4_lite_read ('h04, data       );
+
+    // ........................................................................
+    da_0 = new[8];
+    randomize(da_0);
+
+    foreach(da_0[i])
+      axi4_lite_write(i*4, da_0[i]);
+
+    da_1 = new[8];
+    randomize(da_1);
+
+    foreach(da_1[i])
+      axi4_lite_write(M + (i*4), da_1[i]);
+
+    foreach(da_0[i])
+    begin
+      axi4_lite_read(i*4, data);
+      if(data != da_0[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, i*4);
+    end
+
+    foreach(da_1[i])
+    begin
+      axi4_lite_read(M + (i*4), data);
+      if(data != da_1[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, M + (i*4));
+    end
+
+    // ........................................................................
+    $display("[%10t] Test done!...", $time);
+    $finish;
+  end
 
 // --------------------------------------------------------------------
 endmodule
+

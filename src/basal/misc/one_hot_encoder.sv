@@ -29,7 +29,7 @@
 module
   one_hot_encoder
   #(
-    A,  // encoder select width
+    A=0,  // encoder select width
     D = 2 ** A
   )
   (

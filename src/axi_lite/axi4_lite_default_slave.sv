@@ -55,7 +55,8 @@ module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
   assign axi4_s.awready = (w_state == IDLE) & axi4_s.awvalid & axi4_s.wvalid;
   assign axi4_s.wready  = axi4_s.awvalid & axi4_s.wvalid;
   assign axi4_s.bvalid  = (w_state == VALID);
-  assign axi4_s.bresp   = 2'b11;
+  // assign axi4_s.bresp   = 2'b11;
+  assign axi4_s.bresp   = 2'b00;
 
   //---------------------------------------------------
   reg [I-1:0] bid_r;
@@ -93,7 +94,8 @@ module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
   assign axi4_s.arready = (r_state == IDLE) & axi4_s.arvalid;
   assign axi4_s.rvalid = (r_state == VALID);
   assign axi4_s.rdata  = D;
-  assign axi4_s.rresp  = 2'b11;
+  // assign axi4_s.rresp  = 2'b11;
+  assign axi4_s.rresp  = 2'b00;
   assign axi4_s.rlast  = 1;
 
   //---------------------------------------------------

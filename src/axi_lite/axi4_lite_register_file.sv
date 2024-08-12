@@ -30,7 +30,7 @@ module
   #(
     A=0,  //  address bus width, must be 32 or greater for axi lite
     N=0,  //  data bus width in bytes, must be 4 or 8 for axi lite
-    I=0,  //  ID width
+    I=1,  //  ID width
     MW=0  //  mux select width
   )
   (

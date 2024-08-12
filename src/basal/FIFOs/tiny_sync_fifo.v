@@ -29,7 +29,7 @@
 module
   tiny_sync_fifo
   #(
-    parameter W
+    parameter W=0
   )
   (
     output  reg       wr_full,

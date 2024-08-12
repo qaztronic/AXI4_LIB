@@ -28,8 +28,8 @@
 module
   axi4_m_to_write_fifos
   #(
-    A, // address bus width
-    N,  // data bus width in bytes
+    A=0, // address bus width
+    N=0,  // data bus width in bytes
     I = 1,  // ID width
     // W_D   = 32,
     // B_D   = 2,

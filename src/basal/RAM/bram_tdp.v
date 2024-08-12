@@ -33,8 +33,8 @@
 module
   bram_tdp
   #(
-    parameter W,
-    parameter A
+    parameter W=0,
+    parameter A=0
   )
   (
     // Port A

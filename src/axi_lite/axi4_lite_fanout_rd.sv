@@ -19,8 +19,8 @@
 module axi4_lite_fanout_rd
 #( int         A=0
 ,  int         N=0
-,  int         I=0
 ,  bit [A-1:0] M=0
+,  int         I=1
 ,  int         D=4
 )
 ( axi4_if axi4_s
