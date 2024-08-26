@@ -162,7 +162,7 @@ module axi4_lite_fanout_wr
 
   // --------------------------------------------------------------------
   wire route_lo = (next_state == LO_ADDR);
-  wire route hi = (next_state == HI_ADDR);
+  wire route_hi = (next_state == HI_ADDR);
 
   // --------------------------------------------------------------------
   assign axi4_out_fifo[0].awaddr  = axi4_in_fifo.awaddr;
@@ -182,8 +182,8 @@ module axi4_lite_fanout_wr
   assign b_rd_en [1] = ~b_wr_full & ~b_rd_empty[1];
 
   // --------------------------------------------------------------------
-  assign aw_rd en = aw_wr_en[0] | aw_wr_en[1];
-  assign w_rd_en  = w wr_en [0] | w_wr_en [1];
+  assign aw_rd_en = aw_wr_en[0] | aw_wr_en[1];
+  assign w_rd_en  = w_wr_en [0] | w_wr_en [1];
   assign b_wr_en  = b_rd_en [0] | b_rd_en [1];
 
 // --------------------------------------------------------------------

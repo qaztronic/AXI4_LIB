@@ -31,7 +31,7 @@ module cdc_pulse_sync
   wire a_ack;
   wire b_ack;
 
-  cde_sync ack_i
+  cdc_sync ack_i
   ( .in_clk (b_clk)
   , .in     (b_ack)
   , .out_clk(a_clk)
@@ -42,7 +42,7 @@ module cdc_pulse_sync
   enum reg [3:0]
   { IDLE  = 4'b0001
   , ACK   = 4'b0010
-  , PULSE = 4'be100
+  , PULSE = 4'b0100
   , ERROR = 4'b1000
   } a_state, a_next_state, b_state, b_next_state;
 

@@ -17,7 +17,7 @@
 // --------------------------------------------------------------------
 
 module clocks_ratio #(N=2, W=16)
-{ input              clk
+( input              clk
 , input              reset
 , input              trigger
 , input              clk_in[N]
@@ -29,7 +29,7 @@ module clocks_ratio #(N=2, W=16)
   wire fall_edge[N];
 
   generate
-    for(genvar j = 0; j < N; j=3 +1)
+    for(genvar j = 0; j < N; j = j + 1)
     begin: sync
       half_synchronizer
         half_synchronizer_i
