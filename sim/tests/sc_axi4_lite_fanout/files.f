@@ -4,9 +4,11 @@
 -y .
 +incdir+../../src/BFMs
 +incdir+../../../src/axi_framework
+--top-module top
 
-# top.sv must be listed first
-./top.sv
+#
+../../src/BFMs/axi4_lite_piker_bfm_pkg.sv
+../../src/BFMs/axi4_lite_piker_bfm_if.sv
 
 #
 ../../../src/axi_framework/axi4_if.sv
@@ -24,3 +26,4 @@
 ../../../src/basal/FIFOs/tiny_sync_fifo.sv
 ../../../src/basal/misc/recursive_mux.sv
 
+./top.sv

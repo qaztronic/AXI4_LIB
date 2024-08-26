@@ -17,6 +17,7 @@
 // --------------------------------------------------------------------
 
 module top;
+import axi4_lite_piker_bfm_pkg::*;
   // --------------------------------------------------------------------
   bit aresetn = 0;
   bit aclk;
@@ -29,10 +30,9 @@ module top;
   localparam M  = 'h0100;
   localparam MW =      4;
 
-  axi4_if #(A,N) axi4_s(.*);
-  axi4_if #(A,N) axi4_m[2](.*);
-
-  `include "axi4_lite_piker_bfm.svh"
+  axi4_if #(A, N) axi4_s(.*);
+  axi4_if #(A, N) axi4_m[2](.*);
+  axi4_lite_piker_bfm_if #(A, N) bfm(.*);
 
   // --------------------------------------------------------------------
   axi4_lite_register_if #(N, MW) r_if[2]();
@@ -59,13 +59,18 @@ module top;
   // --------------------------------------------------------------------
   bit [    A-1:0] addr;
   bit [(N*8)-1:0] data;
-  bit [(N*8)-1:0] da_0[];
-  bit [(N*8)-1:0] da_1[];
+  // bit [(N*8)-1:0] da_0[];
+  // bit [(N*8)-1:0] da_1[];
+  axi4_lite_piker_bfm_transaction #(A, N) tr;
+  axi4_lite_piker_bfm_driver driver;
 
   initial
   begin
     // ........................................................................
     $display("[%10t] Model running...", $time);
+
+    driver = new(axi4_s);
+    bfm.init();
 
     repeat(4) @(posedge aclk);
     aresetn = 1;
@@ -73,42 +78,50 @@ module top;
 
     repeat(8) @(posedge aclk);
 
-    axi4_lite_read ('h04, data       );
-    axi4_lite_write('h04, 'habba_beef);
-    axi4_lite_read ('h04, data       );
+    bfm.read ('h04, data       );
+    bfm.read ('h04, data       );
+
+    repeat(8) @(posedge aclk);
+
+    // bfm.axi4_lite_read ('h04, data       );
+    // bfm.axi4_lite_write('h04, 'habba_beef);
+    // bfm.axi4_lite_read ('h04, data       );
 
     // ........................................................................
-    da_0 = new[8];
-    // randomize(da_0);
-    foreach(da_0[i]) da_0[i] = $urandom;
-
-    foreach(da_0[i])
-      axi4_lite_write(16'(i*4), da_0[i]);
-
-    da_1 = new[8];
-    // randomize(da_1);
-    foreach(da_1[i]) da_1[i] = $urandom;
-
-    foreach(da_1[i])
-      axi4_lite_write(16'(M + (i*4)), da_1[i]);
-
-    foreach(da_0[i])
+    repeat(8)
     begin
-      axi4_lite_read(16'(i*4), data);
-      if(data != da_0[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, i*4);
+      tr = new();
+      void'(tr.randomize());
+      $display("[%10t] axaddr: %08x", $time, tr.axaddr);
     end
 
-    foreach(da_1[i])
-    begin
-      axi4_lite_read(16'(M + (i*4)), data);
-      if(data != da_1[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, M + (i*4));
-    end
+    // // ........................................................................
+    // da_0 = new[8];
+    // // randomize(da_0);
+    // foreach(da_0[i]) da_0[i] = $urandom;
 
-    // ........................................................................
-    foreach(da_0[i]) da_0[i] = $urandom;
-    foreach(da_1[i]) da_1[i] = $urandom;
-    
-    
+    // foreach(da_0[i])
+      // bfm.axi4_lite_write(16'(i*4), da_0[i]);
+
+    // da_1 = new[8];
+    // // randomize(da_1);
+    // foreach(da_1[i]) da_1[i] = $urandom;
+
+    // foreach(da_1[i])
+      // bfm.axi4_lite_write(16'(M + (i*4)), da_1[i]);
+
+    // foreach(da_0[i])
+    // begin
+      // bfm.axi4_lite_read(16'(i*4), data);
+      // if(data != da_0[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, i*4);
+    // end
+
+    // foreach(da_1[i])
+    // begin
+      // bfm.axi4_lite_read(16'(M + (i*4)), data);
+      // if(data != da_1[i]) $warning("[%10t] | data mismatch @ 0x%8x", $time, M + (i*4));
+    // end
+
     // ........................................................................
     $display("[%10t] Test done!...", $time);
     $finish;

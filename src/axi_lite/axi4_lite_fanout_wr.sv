@@ -91,10 +91,11 @@ module axi4_lite_fanout_wr
   endgenerate
 
   // --------------------------------------------------------------------
-  enum reg [2:0]
-  { IDLE    = 3'b001
-  , LO_ADDR = 3'b010
-  , HI_ADDR = 3'b100
+  enum reg [3:0]
+  { IDLE    = 4'b0001
+  , LO_ADDR = 4'b0010
+  , HI_ADDR = 4'b0100
+  , FLUSH   = 4'b1000
   } state, next_state;
 
   // --------------------------------------------------------------------
@@ -105,53 +106,84 @@ module axi4_lite_fanout_wr
       state <= next_state;
 
   // --------------------------------------------------------------------
+  wire addr_lo = axi4_in_fifo.awaddr < M;
+
   always_comb
     case(state)
-      IDLE:     if(~aw_rd_empty)
-                  if(axi4_in_fifo.awaddr < M)
-                    next_state = LO_ADDR;
+      IDLE        : if(~aw_rd_empty)
+                      if(addr_lo)
+                        next_state = LO_ADDR;
+                      else
+                        next_state = HI_ADDR;
+                    else
+                      next_state = IDLE;
+
+      LO_ADDR     : if(aw_rd_empty)
+                      if(response_done)
+                        next_state = IDLE;
+                      else
+                        next_state = FLUSH;
+                    else
+                      if(addr_lo)
+                        next_state = LO_ADDR;
+                      else
+                        if(response_done)
+                          next_state = HI_ADDR;
+                        else
+                          next_state = FLUSH;
+
+      HI_ADDR   : if(aw_rd_empty)
+                    if(response_done)
+                      next_state = IDLE;
+                    else
+                      next_state = FLUSH;
                   else
-                    next_state = HI_ADDR;
-                else
-                  next_state = IDLE;
+                    if(addr_lo)
+                      if(response_done)
+                        next_state = LO_ADDR;
+                      else
+                        next_state = FLUSH;
+                    else
+                      next_state = HI_ADDR;
 
-      LO_ADDR:  if(response_done & aw_rd_empty)
-                  next_state = IDLE;
+      FLUSH   : if(response_done)
+                  if(aw_rd_empty)
+                    next_state = IDLE;
+                  else
+                    if(addr_lo)
+                      next_state = LO_ADDR;
+                    else
+                      next_state = HI_ADDR;
                 else
-                  next_state = LO_ADDR;
+                  next_state = FLUSH;
 
-      HI_ADDR:  if(response_done & aw_rd_empty)
-                  next_state = IDLE;
-                else
-                  next_state = HI_ADDR;
-
-      default:  next_state = IDLE;
+      default : next_state = IDLE;
     endcase
 
   // --------------------------------------------------------------------
-  wire route_lo = (state == LO_ADDR);
-  wire route_hi = (state == HI_ADDR);
+  wire route_lo = (next_state == LO_ADDR);
+  wire route hi = (next_state == HI_ADDR);
 
   // --------------------------------------------------------------------
-  assign axi4_out_fifo[0].awaddr = axi4_in_fifo.awaddr;
-  assign axi4_out_fifo[1].awaddr = axi4_in_fifo.awaddr;
-  assign axi4_out_fifo[0].wdata  = axi4_in_fifo.wdata;
-  assign axi4_out_fifo[1].wdata  = axi4_in_fifo.wdata;
-  assign axi4_in_fifo.bresp = route_lo ? axi4_out_fifo[0].bresp : axi4_out_fifo[1].bresp;
+  assign axi4_out_fifo[0].awaddr  = axi4_in_fifo.awaddr;
+  assign axi4_out_fifo[1].awaddr  = axi4_in_fifo.awaddr;
+  assign axi4_out_fifo[0].wdata   = axi4_in_fifo.wdata;
+  assign axi4_out_fifo[1].wdata   = axi4_in_fifo.wdata;
+  assign axi4_in_fifo.bresp       = route_lo ? axi4_out_fifo[0].bresp : axi4_out_fifo[1].bresp;
 
   // --------------------------------------------------------------------
-  assign aw_wr_en[0] = route_lo & ~aw_rd_empty & ~aw_wr_full[0] & ~w_rd_empty  & ~w_wr_full [0];
+  assign aw_wr_en[0] = route_lo & ~aw_wr_full[0] & ~w_rd_empty & ~w_wr_full [0];
   assign w_wr_en [0] = aw_wr_en[0];
-  assign b_rd_en [0] = route_lo & ~b_wr_full   & ~b_rd_empty[0];
+  assign b_rd_en [0] = ~b_wr_full & ~b_rd_empty[0];
 
   // --------------------------------------------------------------------
-  assign aw_wr_en[1] = route_hi & ~aw_rd_empty & ~aw_wr_full[1] & ~w_rd_empty  & ~w_wr_full [1];
+  assign aw_wr_en[1] = route_hi & ~aw_wr_full[1] & ~w_rd_empty & ~w_wr_full [1];
   assign w_wr_en [1] = aw_wr_en[1];
-  assign b_rd_en [1] = route_hi & ~b_wr_full   & ~b_rd_empty[1];
+  assign b_rd_en [1] = ~b_wr_full & ~b_rd_empty[1];
 
   // --------------------------------------------------------------------
-  assign aw_rd_en = aw_wr_en[0] | aw_wr_en[1];
-  assign w_rd_en  = w_wr_en [0] | w_wr_en [1];
+  assign aw_rd en = aw_wr_en[0] | aw_wr_en[1];
+  assign w_rd_en  = w wr_en [0] | w_wr_en [1];
   assign b_wr_en  = b_rd_en [0] | b_rd_en [1];
 
 // --------------------------------------------------------------------
