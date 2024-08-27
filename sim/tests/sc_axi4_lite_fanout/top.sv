@@ -32,7 +32,7 @@ import axi4_lite_piker_bfm_pkg::*;
 
   axi4_if #(A, N) axi4_s(.*);
   axi4_if #(A, N) axi4_m[2](.*);
-  axi4_lite_piker_bfm_if #(A, N) bfm(.*);
+  axi4_lite_piker_bfm_if #(A, N) vif(.*);
 
   // --------------------------------------------------------------------
   axi4_lite_register_if #(N, MW) r_if[2]();
@@ -62,15 +62,14 @@ import axi4_lite_piker_bfm_pkg::*;
   // bit [(N*8)-1:0] da_0[];
   // bit [(N*8)-1:0] da_1[];
   axi4_lite_piker_bfm_transaction #(A, N) tr;
-  axi4_lite_piker_bfm_driver driver;
+  axi4_lite_piker_bfm_driver #(A, N) bfm;
 
   initial
   begin
     // ........................................................................
     $display("[%10t] Model running...", $time);
 
-    driver = new(axi4_s);
-    bfm.init();
+    bfm = new(vif);
 
     repeat(4) @(posedge aclk);
     aresetn = 1;
@@ -78,8 +77,8 @@ import axi4_lite_piker_bfm_pkg::*;
 
     repeat(8) @(posedge aclk);
 
-    bfm.read ('h04, data       );
-    bfm.read ('h04, data       );
+    // bfm.read ('h04, data       );
+    // bfm.read ('h04, data       );
 
     repeat(8) @(posedge aclk);
 
