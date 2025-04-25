@@ -81,7 +81,6 @@ interface
 
 
 // --------------------------------------------------------------------
-// synthesis translate_off
   // clocking cb_s @(posedge aclk);
     // input   arid;
     // input   araddr;
@@ -174,7 +173,6 @@ interface
     // // input   aresetn;
     // // input   aclk;
   // endclocking
-// // synthesis translate_on
 // // --------------------------------------------------------------------
 
 
@@ -187,9 +185,7 @@ interface
       // slave
       // (
 // // --------------------------------------------------------------------
-// // synthesis translate_off
         // clocking  cb_s,
-// // synthesis translate_on
 // // --------------------------------------------------------------------
         // input   arid,
         // input   araddr,
@@ -242,9 +238,7 @@ interface
       // master
       // (
 // // --------------------------------------------------------------------
-// // synthesis translate_off
         // clocking  cb_m,
-// // synthesis translate_on
 // // --------------------------------------------------------------------
         // output  arid,
         // output  araddr,
@@ -292,14 +286,12 @@ interface
 
 
 // // --------------------------------------------------------------------
-// // synthesis translate_off
   // task
     // zero_cycle_delay;
 
     // ##0;
 
   // endtask: zero_cycle_delay
-// // synthesis translate_on
 // // --------------------------------------------------------------------
 
   // // --------------------------------------------------------------------
