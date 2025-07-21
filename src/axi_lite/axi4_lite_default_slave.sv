@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2020 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the "License");
@@ -16,11 +16,18 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
-( axi4_if axi4_s
-, input   aclk
-, input   aresetn
+module axi4_lite_default_slave #(axi4_lite_cfg_t CONFIG, int D='hbaadc0de)
+( input        aclk
+, input        aresetn
+, axi4_lite_if axi4_s
 );
+import axi4_lite_pkg::*;
+
+  // --------------------------------------------------------------------
+  localparam A = CONFIG.A;
+  localparam N = CONFIG.N;
+  localparam I = CONFIG.I;
+
   // --------------------------------------------------------------------
   // --------------------------------------------------------------------
   enum reg [1:0]
@@ -59,14 +66,6 @@ module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
   assign axi4_s.bresp   = 2'b00;
 
   //---------------------------------------------------
-  reg [I-1:0] bid_r;
-  assign axi4_s.bid = bid_r;
-
-  always_ff @(posedge aclk)
-    if(axi4_s.awvalid)
-      bid_r <= axi4_s.awid;
-
-  //---------------------------------------------------
   //---------------------------------------------------
   always_ff @(posedge aclk)
     if(~aresetn)
@@ -96,15 +95,31 @@ module axi4_lite_default_slave #(A=0, N=0, I=1, D='hbaadc0de)
   assign axi4_s.rdata  = D;
   // assign axi4_s.rresp  = 2'b11;
   assign axi4_s.rresp  = 2'b00;
-  assign axi4_s.rlast  = 1;
+  // assign axi4_s.rlast  = 1;
 
-  //---------------------------------------------------
-  reg [I-1:0] rid_r;
-  assign axi4_s.rid = rid_r;
+  // --------------------------------------------------------------------
+  generate
+    if(CONFIG.I > 0)
+    begin : id
+      //...................................................
+      reg [I-1:0] rid_r;
+      assign axi4_s.rid = rid_r;
 
-  always_ff @(posedge aclk)
-    if(axi4_s.arvalid)
-      rid_r <= axi4_s.arid;
+      always_ff @(posedge aclk)
+        if(axi4_s.arvalid)
+          rid_r <= axi4_s.arid;
+
+      //...................................................
+      reg [I-1:0] bid_r;
+      assign axi4_s.bid = bid_r;
+
+      always_ff @(posedge aclk)
+        if(axi4_s.awvalid)
+          bid_r <= axi4_s.awid;
+    end
+  endgenerate
 
 // --------------------------------------------------------------------
 endmodule
+
+

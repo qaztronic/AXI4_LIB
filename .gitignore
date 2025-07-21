@@ -1,0 +1,3 @@
+
+sim/tests/**/logs/*
+sim/tests/**/obj_dir/*

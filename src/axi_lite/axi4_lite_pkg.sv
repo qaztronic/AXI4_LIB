@@ -17,16 +17,16 @@
 // --------------------------------------------------------------------
 
 // --------------------------------------------------------------------
-package axis_pkg;
+package axi4_lite_pkg;
   // --------------------------------------------------------------------
   typedef struct packed {
+    int A;
     int N;
     int I;
-    int D;
-    int U;
-    int USE_TSTRB;
-    int USE_TKEEP;
-  } axis_cfg_t;
+    int USE_STRB;
+    int USE_PROT;
+    int USE_MOD_PORT;
+  } axi4_lite_cfg_t;
 
 // --------------------------------------------------------------------
 endpackage

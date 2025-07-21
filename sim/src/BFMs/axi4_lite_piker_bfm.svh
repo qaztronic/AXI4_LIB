@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2024 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the "License");
@@ -15,15 +15,15 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
-logic [    A-1:0] araddr  = 'x;
-logic             arvalid =  0;
-logic [    A-1:0] awaddr  = 'x;
-logic             awvalid =  0;
-logic             bready  =  0;
-logic             rready  =  0;
-logic [(N*8)-1:0] wdata   = 'x;
-logic [    N-1:0] wstrb   = 'x;
-logic             wvalid  =  0;
+logic [    CONFIG.A-1:0] araddr  = 'x;
+logic                    arvalid =  0;
+logic [    CONFIG.A-1:0] awaddr  = 'x;
+logic                    awvalid =  0;
+logic                    bready  =  0;
+logic                    rready  =  0;
+logic [(CONFIG.N*8)-1:0] wdata   = 'x;
+logic [    CONFIG.N-1:0] wstrb   = 'x;
+logic                    wvalid  =  0;
 
 assign axi4_s.araddr  = araddr ;
 assign axi4_s.arvalid = arvalid;
@@ -37,8 +37,8 @@ assign axi4_s.wvalid  = wvalid ;
 
 // --------------------------------------------------------------------
 task axi4_lite_read
-( input  [    A-1:0] addr
-, output [(N*8)-1:0] data
+( input  [    CONFIG.A-1:0] addr
+, output [(CONFIG.N*8)-1:0] data
 );
   @(negedge aclk);
   araddr  = addr;
@@ -61,8 +61,8 @@ endtask
 
 // --------------------------------------------------------------------
 task axi4_lite_write
-( input [    A-1:0] addr
-, input [(N*8)-1:0] data
+( input [    CONFIG.A-1:0] addr
+, input [(CONFIG.N*8)-1:0] data
 );
   @(negedge aclk);
   awaddr  = addr;

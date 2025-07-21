@@ -16,45 +16,63 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module top;
 import axi4_lite_pkg::*;
 
+interface axi4_lite_if #(axi4_lite_cfg_t CONFIG)
+( input aclk
+, input aresetn
+);
   // --------------------------------------------------------------------
-  bit aresetn = 0;
-  bit aclk;
-  initial forever #(10ns/2) aclk = ~aclk;
-
-  // --------------------------------------------------------------------
-  localparam axi4_lite_cfg_t CONFIG = '{default: 0, A: 16, N: 4};
-  axi4_lite_if #(CONFIG) axi4_s(.*);
-
-  `include "axi4_lite_piker_bfm.svh"
+  localparam int A = CONFIG.A > 0 ? CONFIG.A : 1;
+  localparam int N = CONFIG.N > 0 ? CONFIG.N : 1;
+  localparam int I = CONFIG.I > 0 ? CONFIG.I : 1;
 
   // --------------------------------------------------------------------
-  axi4_lite_default_slave #(CONFIG)
-    dut(.*);
+  wire [    A-1:0] araddr ;
+  wire [    I-1:0] arid   ;
+  wire [      2:0] arprot ;
+  wire             arready;
+  wire             arvalid;
+  wire [    A-1:0] awaddr ;
+  wire [    I-1:0] awid   ;
+  wire [      2:0] awprot ;
+  wire             awready;
+  wire             awvalid;
+  wire [    I-1:0] bid    ;
+  wire             bready ;
+  wire [      1:0] bresp  ;
+  wire             bvalid ;
+  wire [(8*N)-1:0] rdata  ;
+  wire [    I-1:0] rid    ;
+  wire             rready ;
+  wire [      1:0] rresp  ;
+  wire             rvalid ;
+  wire [(8*N)-1:0] wdata  ;
+  wire [    I-1:0] wid    ;
+  wire             wready ;
+  wire [    N-1:0] wstrb  ;
+  wire             wvalid ;
 
   // --------------------------------------------------------------------
-  bit [    CONFIG.A-1:0] addr;
-  bit [(CONFIG.N*8)-1:0] data;
+  generate
+    if(CONFIG.USE_PROT == 0)
+    begin : prot
+      assign arprot = 0;
+      assign awprot = 0;
+    end
+  endgenerate
 
-   initial
-   begin
-      $display("[%10t] Model running...", $time);
-
-      repeat(4) @(posedge aclk);
-      aresetn = 1;
-      $display("[%10t] reset deasserted...", $time);
-
-      repeat(8) @(posedge aclk);
-
-      axi4_lite_read ('h04, data       );
-      axi4_lite_write('h04, 'habba_beef);
-      axi4_lite_read ('h04, data       );
-
-      $display("[%10t] Test done!...", $time);
-      $finish;
-   end
+  // --------------------------------------------------------------------
+  generate
+    if(CONFIG.I < 1)
+    begin : id
+      assign arid = 0;
+      assign awid = 0;
+      assign bid  = 0;
+      assign rid  = 0;
+      assign wid  = 0;
+    end
+  endgenerate
 
 // --------------------------------------------------------------------
-endmodule
+endinterface
