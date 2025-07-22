@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2021 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the “License”);
@@ -23,10 +23,10 @@ module axi4_lite_fanout_wr
 ,  int         I=1
 ,  int         D=4
 )
-( axi4_if axi4_s
-, axi4_if axi4_m[2]
-, input   aclk
-, input   aresetn
+( input        aclk
+, input        aresetn
+, axi4_lite_if axi4_s
+, axi4_lite_if axi4_m[2]
 );
   // --------------------------------------------------------------------
   wire aw_rd_empty;

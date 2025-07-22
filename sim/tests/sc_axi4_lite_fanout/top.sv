@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2024 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the "License");
@@ -17,29 +17,35 @@
 // --------------------------------------------------------------------
 
 module top;
-import axi4_lite_piker_bfm_pkg::*;
+import axi4_lite_pkg::*;
   // --------------------------------------------------------------------
   bit aresetn = 0;
   bit aclk;
   initial forever #(10ns/2) aclk = ~aclk;
 
   // --------------------------------------------------------------------
-  localparam A  =     16;
-  localparam N  =      4;
-  localparam I  =      1;
+  // localparam A  =     16;
+  // localparam N  =      4;
+  // localparam I  =      1;
   localparam M  = 'h0100;
   localparam MW =      4;
 
-  axi4_if #(A, N) axi4_s(.*);
-  axi4_if #(A, N) axi4_m[2](.*);
-  axi4_lite_piker_bfm_if #(A, N) vif(.*);
+  // --------------------------------------------------------------------
+  localparam axi4_lite_cfg_t CONFIG = '{default: 0, A: 16, N: 4};
+  // axi4_lite_if #(CONFIG) axi4_s(.*);
+
+  `include "axi4_lite_piker_bfm.svh"
+
+  axi4_lite_if #(CONFIG) axi4_s(.*);
+  axi4_lite_if #(CONFIG) axi4_m[2](.*);
+  // axi4_lite_piker_bfm_if #(A, N) vif(.*);
 
   // --------------------------------------------------------------------
   axi4_lite_register_if #(N, MW) r_if[2]();
   assign r_if[0].register_in = r_if[0].register_out;
   assign r_if[1].register_in = r_if[1].register_out;
 
-  axi4_lite_fanout #(A, N, M, I)
+  axi4_lite_fanout #(CONFIG, M)
     dut(.*);
 
   axi4_lite_register_file #(A, N, I, MW)
@@ -61,15 +67,15 @@ import axi4_lite_piker_bfm_pkg::*;
   bit [(N*8)-1:0] data;
   // bit [(N*8)-1:0] da_0[];
   // bit [(N*8)-1:0] da_1[];
-  axi4_lite_piker_bfm_transaction #(A, N) tr;
-  axi4_lite_piker_bfm_driver #(A, N) bfm;
+  // axi4_lite_piker_bfm_transaction #(A, N) tr;
+  // axi4_lite_piker_bfm_driver #(A, N) bfm;
 
   initial
   begin
     // ........................................................................
     $display("[%10t] Model running...", $time);
 
-    bfm = new(vif);
+    // bfm = new(vif);
 
     repeat(4) @(posedge aclk);
     aresetn = 1;
@@ -77,22 +83,19 @@ import axi4_lite_piker_bfm_pkg::*;
 
     repeat(8) @(posedge aclk);
 
-    // bfm.read ('h04, data       );
-    // bfm.read ('h04, data       );
+    bfm.axi4_lite_read ('h04, data       );
+    bfm.axi4_lite_write('h04, 'habba_beef);
+    bfm.axi4_lite_read ('h04, data       );
 
     repeat(8) @(posedge aclk);
 
-    // bfm.axi4_lite_read ('h04, data       );
-    // bfm.axi4_lite_write('h04, 'habba_beef);
-    // bfm.axi4_lite_read ('h04, data       );
-
-    // ........................................................................
-    repeat(8)
-    begin
-      tr = new();
-      void'(tr.randomize());
-      $display("[%10t] axaddr: %08x", $time, tr.axaddr);
-    end
+    // // ........................................................................
+    // repeat(8)
+    // begin
+      // tr = new();
+      // void'(tr.randomize());
+      // $display("[%10t] axaddr: %08x", $time, tr.axaddr);
+    // end
 
     // // ........................................................................
     // da_0 = new[8];

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2021 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the “License”);
@@ -16,17 +16,17 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_fanout
-#( int         A=0
-,  int         N=0
-,  bit [A-1:0] M=0
-,  int         I=1
-)
-( axi4_if axi4_s
-, axi4_if axi4_m[2]
-, input   aclk
-, input   aresetn
+module axi4_lite_fanout #(axi4_lite_cfg_t CONFIG, int M=0)
+( input        aclk
+, input        aresetn
+, axi4_lite_if axi4_s
+, axi4_lite_if axi4_m[2]
 );
+  // --------------------------------------------------------------------
+  localparam int A = CONFIG.A;
+  localparam int N = CONFIG.N;
+  localparam int I = CONFIG.I;
+
   // --------------------------------------------------------------------
   axi4_lite_fanout_wr #(A, N, M, I)
     axi4_lite_fanout_wr_i(.*);
