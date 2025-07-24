@@ -16,24 +16,21 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-import axi4_lite_pkg::*;
-
-interface axi4_lite_register_if #(axi4_lite_cfg_t C, int CLOG2_W, int W = 2 ** CLOG2_W)
+interface axi4_bus_rd_fifo_if
 ( input aclk
 , input aresetn
 );
   // --------------------------------------------------------------------
-  wire  [(C.N*8)-1:0] register_in   [W-1:0];
-  reg   [(C.N*8)-1:0] register_out  [W-1:0];
-  wire                wr_en         [W-1:0];
-  wire                rd_en         [W-1:0];
-  wire  [(8*C.N)-1:0] wdata;
+  wire ar_rd_en;
+  wire ar_rd_empty;
+  wire ar_wr_en;
+  wire ar_wr_full;
 
   // --------------------------------------------------------------------
-  // synthesis translate_off
-  initial if( ~((C.N == 8) | (C.N == 4)) ) $error("!!! | %m | ~(N == 8) | (N == 4) but N = %0d", C.N);
-  // synthesis translate_on
-  // --------------------------------------------------------------------
+  wire r_wr_full ;
+  wire r_wr_en   ;
+  wire r_rd_empty;
+  wire r_rd_en   ;
 
 // --------------------------------------------------------------------
 endinterface

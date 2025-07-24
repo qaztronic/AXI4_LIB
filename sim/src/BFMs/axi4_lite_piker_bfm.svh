@@ -15,15 +15,15 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
-logic [    CONFIG.A-1:0] araddr  = 'x;
-logic                    arvalid =  0;
-logic [    CONFIG.A-1:0] awaddr  = 'x;
-logic                    awvalid =  0;
-logic                    bready  =  0;
-logic                    rready  =  0;
-logic [(CONFIG.N*8)-1:0] wdata   = 'x;
-logic [    CONFIG.N-1:0] wstrb   = 'x;
-logic                    wvalid  =  0;
+logic [    C.A-1:0] araddr  = 'x;
+logic               arvalid =  0;
+logic [    C.A-1:0] awaddr  = 'x;
+logic               awvalid =  0;
+logic               bready  =  0;
+logic               rready  =  0;
+logic [(C.N*8)-1:0] wdata   = 'x;
+logic [    C.N-1:0] wstrb   = 'x;
+logic               wvalid  =  0;
 
 assign axi4_s.araddr  = araddr ;
 assign axi4_s.arvalid = arvalid;
@@ -37,8 +37,8 @@ assign axi4_s.wvalid  = wvalid ;
 
 // --------------------------------------------------------------------
 task axi4_lite_read
-( input  [    CONFIG.A-1:0] addr
-, output [(CONFIG.N*8)-1:0] data
+( input  [    C.A-1:0] addr
+, output [(C.N*8)-1:0] data
 );
   @(negedge aclk);
   araddr  = addr;
@@ -61,8 +61,8 @@ endtask
 
 // --------------------------------------------------------------------
 task axi4_lite_write
-( input [    CONFIG.A-1:0] addr
-, input [(CONFIG.N*8)-1:0] data
+( input [    C.A-1:0] addr
+, input [(C.N*8)-1:0] data
 );
   @(negedge aclk);
   awaddr  = addr;

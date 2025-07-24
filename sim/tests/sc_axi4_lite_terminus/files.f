@@ -11,5 +11,4 @@
 ../../../src/axi_lite/axi4_lite_pkg.sv
 ../../../src/axi_lite/axi4_lite_if.sv
 
-../../../src/axi_lite/axi4_lite_default_slave.sv
-
+../../../src/axi_lite/axi4_lite_terminus.sv

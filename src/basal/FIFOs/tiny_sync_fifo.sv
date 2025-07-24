@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------
-// Copyright 2020 qaztronic
+// Copyright qaztronic
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
 // Licensed under the Solderpad Hardware License v 2.1 (the “License”);
@@ -20,11 +20,9 @@ module tiny_sync_fifo #(W=0)
 ( output  reg       wr_full
 , input   [W-1:0]   wr_data
 , input             wr_en
-
 , output  reg       rd_empty
 , output  [W-1:0]   rd_data
 , input             rd_en
-
 , input             clk
 , input             reset
 );
@@ -97,10 +95,10 @@ module tiny_sync_fifo #(W=0)
 // synthesis translate_off
   always_ff @(posedge clk)
     if(wr_en & wr_full)
-      $stop;
+      $error("!!! [%10t] | %m | wr_en & wr_full", $time);
   always_ff @(posedge clk)
     if(rd_en & rd_empty)
-      $stop;
+      $error("!!! [%10t] | %m | rd_en & rd_empty", $time);
 // synthesis translate_on
 // --------------------------------------------------------------------
 

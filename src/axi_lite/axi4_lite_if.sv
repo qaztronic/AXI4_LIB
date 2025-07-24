@@ -18,44 +18,44 @@
 
 import axi4_lite_pkg::*;
 
-interface axi4_lite_if #(axi4_lite_cfg_t CONFIG)
+interface axi4_lite_if #(axi4_lite_cfg_t C)
 ( input aclk
 , input aresetn
 );
   // --------------------------------------------------------------------
-  localparam int A = CONFIG.A > 0 ? CONFIG.A : 1;
-  localparam int N = CONFIG.N > 0 ? CONFIG.N : 1;
-  localparam int I = CONFIG.I > 0 ? CONFIG.I : 1;
+  wire [    C.A-1:0] araddr ;
+  wire               arready;
+  wire               arvalid;
+  wire [    C.A-1:0] awaddr ;
+  wire               awready;
+  wire               awvalid;
+  wire               bready ;
+  wire [        1:0] bresp  ;
+  wire               bvalid ;
+  wire [(8*C.N)-1:0] rdata  ;
+  wire               rready ;
+  wire [        1:0] rresp  ;
+  wire               rvalid ;
+  wire [(8*C.N)-1:0] wdata  ;
+  wire               wready ;
+  wire               wvalid ;
 
   // --------------------------------------------------------------------
-  wire [    A-1:0] araddr ;
-  wire [    I-1:0] arid   ;
-  wire [      2:0] arprot ;
-  wire             arready;
-  wire             arvalid;
-  wire [    A-1:0] awaddr ;
-  wire [    I-1:0] awid   ;
-  wire [      2:0] awprot ;
-  wire             awready;
-  wire             awvalid;
-  wire [    I-1:0] bid    ;
-  wire             bready ;
-  wire [      1:0] bresp  ;
-  wire             bvalid ;
-  wire [(8*N)-1:0] rdata  ;
-  wire [    I-1:0] rid    ;
-  wire             rready ;
-  wire [      1:0] rresp  ;
-  wire             rvalid ;
-  wire [(8*N)-1:0] wdata  ;
-  wire [    I-1:0] wid    ;
-  wire             wready ;
-  wire [    N-1:0] wstrb  ;
-  wire             wvalid ;
+  wire [C.N-1:0] wstrb;
 
-  // --------------------------------------------------------------------
   generate
-    if(CONFIG.USE_PROT == 0)
+    if(C.USE_STRB == 0)
+    begin : strb
+      assign wstrb = 0;
+    end
+  endgenerate
+
+  // --------------------------------------------------------------------
+  wire [2:0] arprot;
+  wire [2:0] awprot;
+
+  generate
+    if(C.USE_PROT == 0)
     begin : prot
       assign arprot = 0;
       assign awprot = 0;
@@ -63,8 +63,16 @@ interface axi4_lite_if #(axi4_lite_cfg_t CONFIG)
   endgenerate
 
   // --------------------------------------------------------------------
+  /* verilator lint_off ASCRANGE */
+  wire [C.I-1:0] arid;
+  wire [C.I-1:0] awid;
+  wire [C.I-1:0] bid ;
+  wire [C.I-1:0] rid ;
+  wire [C.I-1:0] wid ;
+  /* verilator lint_on ASCRANGE */
+
   generate
-    if(CONFIG.I < 1)
+    if(C.I < 1)
     begin : id
       assign arid = 0;
       assign awid = 0;
@@ -72,6 +80,119 @@ interface axi4_lite_if #(axi4_lite_cfg_t CONFIG)
       assign rid  = 0;
       assign wid  = 0;
     end
+  endgenerate
+
+  // --------------------------------------------------------------------
+  wire [C.A-1:0] _araddr ;
+
+  typedef struct packed {
+    logic [C.A-1:0] addr;
+  } axi4_lite_ar_t;
+
+  localparam AR_W = $bits(axi4_lite_ar_t);
+
+  axi4_lite_ar_t ar;
+  assign ar.addr = araddr;
+  wire [AR_W-1:0] ar_flat_in;
+  assign ar_flat_in = ar;
+
+  wire [AR_W-1:0] ar_flat_out;
+  assign _araddr = ar_flat_out;
+
+  // --------------------------------------------------------------------
+  wire [C.A-1:0] _awaddr;
+
+  typedef struct packed {
+    logic [C.A-1:0] addr;
+  } axi4_lite_aw_t;
+
+  localparam AW_W = $bits(axi4_lite_aw_t);
+
+  axi4_lite_aw_t aw;
+  wire [AW_W-1:0] aw_flat_in;
+  assign aw_flat_in = aw;
+  assign aw.addr = awaddr;
+
+  wire [AW_W-1:0] aw_flat_out;
+  // axi4_lite_aw_t _aw = aw_flat_out;
+  // assign _awaddr = _aw.addr;
+  assign _awaddr = aw_flat_out;
+
+  // --------------------------------------------------------------------
+  typedef struct packed {
+    logic [1:0] resp;
+  } axi4_lite_b_t;
+
+  localparam B_W = $bits(axi4_lite_b_t);
+
+  axi4_lite_b_t b;
+  assign b.resp = bresp;
+  wire [B_W-1:0] b_flat_in;
+  wire [B_W-1:0] b_flat_out;
+  assign b_flat_in = b;
+
+  // --------------------------------------------------------------------
+  typedef struct packed {
+    logic [(8*C.N)-1:0] data;
+    logic [        1:0] resp;
+  } axi4_lite_r_t;
+
+  localparam R_W = $bits(axi4_lite_r_t);
+
+  axi4_lite_r_t r;
+  assign r.data = rdata;
+  assign r.resp = rresp;
+  wire [R_W-1:0] r_flat_in;
+  wire [R_W-1:0] r_flat_out;
+  assign r_flat_in = r;
+
+  // --------------------------------------------------------------------
+  wire [(8*C.N)-1:0] _wdata;
+  wire [    C.N-1:0] _wstrb;
+
+  typedef struct packed {
+    logic [(8*C.N)-1:0] data;
+  } axi4_lite_w_0_t;
+
+  typedef struct packed {
+    logic [(8*C.N)-1:0] data;
+    logic [    C.N-1:0] strb;
+  } axi4_lite_w_1_t;
+
+  localparam W_W = (C.USE_STRB == 0) ? $bits(axi4_lite_w_0_t) : $bits(axi4_lite_w_1_t);
+  wire [W_W-1:0] w_flat_in;
+  wire [W_W-1:0] w_flat_out;
+
+  generate
+  begin : pack_w
+    if(C.USE_STRB == 0)
+    begin
+      // ....................................
+      axi4_lite_w_0_t w;
+      assign w.data    = wdata;
+      assign w_flat_in = w;
+
+      // ....................................
+      axi4_lite_w_0_t _w;
+      assign _w     = w_flat_out;
+      assign _wdata = _w.data;
+      assign _wstrb = 0;
+    end
+    else
+    begin
+      // ....................................
+      axi4_lite_w_1_t w;
+      assign w.data    = wdata;
+      assign w.strb    = wstrb;
+      assign w_flat_in = w;
+
+      // ....................................
+      axi4_lite_w_0_t _w;
+      assign _w     = w_flat_out;
+      assign _wdata = _w.data;
+      assign _wstrb = _w.strb;
+    end
+  end
   endgenerate
 
 // --------------------------------------------------------------------

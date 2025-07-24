@@ -25,18 +25,18 @@ import axi4_lite_pkg::*;
   initial forever #(10ns/2) aclk = ~aclk;
 
   // --------------------------------------------------------------------
-  localparam axi4_lite_cfg_t CONFIG = '{default: 0, A: 16, N: 4};
-  axi4_lite_if #(CONFIG) axi4_s(.*);
+  localparam axi4_lite_cfg_t C = '{default: 0, A: 16, N: 4};
+  axi4_lite_if #(C) axi4_s(.*);
 
   `include "axi4_lite_piker_bfm.svh"
 
   // --------------------------------------------------------------------
-  axi4_lite_default_slave #(CONFIG)
+  axi4_lite_terminus #(C)
     dut(.*);
 
   // --------------------------------------------------------------------
-  bit [    CONFIG.A-1:0] addr;
-  bit [(CONFIG.N*8)-1:0] data;
+  bit [    C.A-1:0] addr;
+  bit [(C.N*8)-1:0] data;
 
    initial
    begin
