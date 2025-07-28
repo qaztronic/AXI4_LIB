@@ -16,18 +16,11 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_terminus #(axi4_lite_cfg_t CONFIG, int D='hbaadc0de)
+module axi4_lite_terminus #(axi4_lite_pkg::axi4_lite_cfg_t C, int D='hbaadc0de)
 ( input        aclk
 , input        aresetn
 , axi4_lite_if axi4_s
 );
-import axi4_lite_pkg::*;
-
-  // --------------------------------------------------------------------
-  localparam A = CONFIG.A;
-  localparam N = CONFIG.N;
-  localparam I = CONFIG.I;
-
   // --------------------------------------------------------------------
   // --------------------------------------------------------------------
   enum reg [1:0]
@@ -62,7 +55,6 @@ import axi4_lite_pkg::*;
   assign axi4_s.awready = (w_state == IDLE) & axi4_s.awvalid & axi4_s.wvalid;
   assign axi4_s.wready  = axi4_s.awvalid & axi4_s.wvalid;
   assign axi4_s.bvalid  = (w_state == VALID);
-  // assign axi4_s.bresp   = 2'b11;
   assign axi4_s.bresp   = 2'b00;
 
   //---------------------------------------------------
@@ -93,16 +85,14 @@ import axi4_lite_pkg::*;
   assign axi4_s.arready = (r_state == IDLE) & axi4_s.arvalid;
   assign axi4_s.rvalid = (r_state == VALID);
   assign axi4_s.rdata  = D;
-  // assign axi4_s.rresp  = 2'b11;
   assign axi4_s.rresp  = 2'b00;
-  // assign axi4_s.rlast  = 1;
 
   // --------------------------------------------------------------------
   generate
-    if(CONFIG.I > 0)
+    if(C.I > 0)
     begin : id
       //...................................................
-      reg [I-1:0] rid_r;
+      reg [C.I-1:0] rid_r;
       assign axi4_s.rid = rid_r;
 
       always_ff @(posedge aclk)
@@ -110,7 +100,7 @@ import axi4_lite_pkg::*;
           rid_r <= axi4_s.arid;
 
       //...................................................
-      reg [I-1:0] bid_r;
+      reg [C.I-1:0] bid_r;
       assign axi4_s.bid = bid_r;
 
       always_ff @(posedge aclk)

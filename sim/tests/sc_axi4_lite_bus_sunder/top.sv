@@ -36,7 +36,6 @@ import axi4_lite_pkg::*;
   `include "axi4_lite_piker_bfm.svh"
 
   // --------------------------------------------------------------------
-
   axi4_lite_bus_sunder #(C, M)
     dut(.*);
 
@@ -49,8 +48,9 @@ import axi4_lite_pkg::*;
    end
 
   // --------------------------------------------------------------------
-  bit [    C.A-1:0] addr;
+/* verilator lint_off UNUSEDSIGNAL */
   bit [(C.N*8)-1:0] data;
+/* verilator lint_on UNUSEDSIGNAL */
 
   initial
   begin
@@ -63,9 +63,9 @@ import axi4_lite_pkg::*;
 
     repeat(8) @(posedge aclk);
 
-    // bfm.axi4_lite_read ('h04, data       );
-    // bfm.axi4_lite_write('h04, 'habba_beef);
-    // bfm.axi4_lite_read ('h04, data       );
+    axi4_lite_read ('h04, data       );
+    axi4_lite_write('h04, 'habba_beef);
+    axi4_lite_read ('h04, data       );
 
     repeat(8) @(posedge aclk);
 

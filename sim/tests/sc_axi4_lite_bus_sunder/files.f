@@ -13,8 +13,11 @@
 ../../../src/kit/axi4_bus_rd_fifo_if.sv
 ../../../src/kit/axi4_s_bus_wr_fifos.sv
 ../../../src/kit/axi4_s_bus_rd_fifos.sv
+../../../src/kit/axi4_m_bus_wr_fifos.sv
+../../../src/kit/axi4_m_bus_rd_fifos.sv
 
 ../../../src/axi_lite/axi4_lite_bus_sunder_rd.sv
+../../../src/axi_lite/axi4_lite_bus_sunder_wr.sv
 ../../../src/axi_lite/axi4_lite_bus_sunder.sv
 
 # ../../../src/axi_lite/axi4_lite_default_slave.sv

@@ -36,6 +36,7 @@ import axi4_lite_pkg::*;
 
   // --------------------------------------------------------------------
   axi4_lite_register_if #(C, CLOG2_W) r_if(.*);
+  assign r_if.register_in = r_if.register_out;
 
   axi4_lite_register_file #(C, CLOG2_W)
     dut(.*);
@@ -49,8 +50,9 @@ import axi4_lite_pkg::*;
    end
 
   // --------------------------------------------------------------------
-  bit [    C.A-1:0] addr;
+  /* verilator lint_off UNUSEDSIGNAL */
   bit [(C.N*8)-1:0] data;
+  /* verilator lint_on UNUSEDSIGNAL */
 
   initial
   begin

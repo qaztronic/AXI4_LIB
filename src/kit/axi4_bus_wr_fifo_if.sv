@@ -16,6 +16,7 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
+/* verilator lint_off UNUSEDSIGNAL */
 interface axi4_bus_wr_fifo_if
 ( input aclk
 , input aresetn
@@ -38,5 +39,6 @@ interface axi4_bus_wr_fifo_if
   wire b_rd_empty;
   wire b_rd_en   ;
 
+/* verilator lint_on UNUSEDSIGNAL */
 // --------------------------------------------------------------------
 endinterface

@@ -16,12 +16,13 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-import axi4_lite_pkg::*;
-
-interface axi4_lite_if #(axi4_lite_cfg_t C)
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNDRIVEN */
+interface axi4_lite_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
 ( input aclk
 , input aresetn
 );
+import axi4_lite_pkg::*;
   // --------------------------------------------------------------------
   wire [    C.A-1:0] araddr ;
   wire               arready;
@@ -83,8 +84,6 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   endgenerate
 
   // --------------------------------------------------------------------
-  wire [C.A-1:0] _araddr ;
-
   typedef struct packed {
     logic [C.A-1:0] addr;
   } axi4_lite_ar_t;
@@ -97,11 +96,9 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   assign ar_flat_in = ar;
 
   wire [AR_W-1:0] ar_flat_out;
-  assign _araddr = ar_flat_out;
+  wire [ C.A-1:0] _araddr = ar_flat_out;
 
   // --------------------------------------------------------------------
-  wire [C.A-1:0] _awaddr;
-
   typedef struct packed {
     logic [C.A-1:0] addr;
   } axi4_lite_aw_t;
@@ -114,9 +111,7 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   assign aw.addr = awaddr;
 
   wire [AW_W-1:0] aw_flat_out;
-  // axi4_lite_aw_t _aw = aw_flat_out;
-  // assign _awaddr = _aw.addr;
-  assign _awaddr = aw_flat_out;
+  wire [ C.A-1:0] _awaddr = aw_flat_out;
 
   // --------------------------------------------------------------------
   typedef struct packed {
@@ -128,8 +123,10 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   axi4_lite_b_t b;
   assign b.resp = bresp;
   wire [B_W-1:0] b_flat_in;
-  wire [B_W-1:0] b_flat_out;
   assign b_flat_in = b;
+
+  wire [B_W-1:0] b_flat_out;
+  wire [    1:0] _bresp = b_flat_out;
 
   // --------------------------------------------------------------------
   typedef struct packed {
@@ -143,8 +140,12 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   assign r.data = rdata;
   assign r.resp = rresp;
   wire [R_W-1:0] r_flat_in;
-  wire [R_W-1:0] r_flat_out;
   assign r_flat_in = r;
+
+  wire [R_W-1:0] r_flat_out;
+  axi4_lite_r_t _r = r_flat_out;
+  wire [(8*C.N)-1:0] _rdata = _r.data;
+  wire [        1:0] _rresp = _r.resp;
 
   // --------------------------------------------------------------------
   wire [(8*C.N)-1:0] _wdata;
@@ -166,7 +167,7 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   generate
   begin : pack_w
     if(C.USE_STRB == 0)
-    begin
+    begin : omit_strb
       // ....................................
       axi4_lite_w_0_t w;
       assign w.data    = wdata;
@@ -179,7 +180,7 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
       assign _wstrb = 0;
     end
     else
-    begin
+    begin : use_strb
       // ....................................
       axi4_lite_w_1_t w;
       assign w.data    = wdata;
@@ -195,5 +196,7 @@ interface axi4_lite_if #(axi4_lite_cfg_t C)
   end
   endgenerate
 
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNDRIVEN */
 // --------------------------------------------------------------------
 endinterface

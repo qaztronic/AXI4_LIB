@@ -16,12 +16,14 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_register_file #(axi4_lite_cfg_t C, int CLOG2_W)
+module axi4_lite_register_file #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0}, int CLOG2_W=0)
 ( input  aclk
 , input  aresetn
 , axi4_lite_if axi4_s
 , axi4_lite_register_if r_if
 );
+import axi4_lite_pkg::*;
+
   // --------------------------------------------------------------------
   localparam  W = 2 ** CLOG2_W;
   localparam LB = (C.N == 8) ? 3 : 2;
@@ -89,28 +91,27 @@ module axi4_lite_register_file #(axi4_lite_cfg_t C, int CLOG2_W)
   endgenerate
 
 
-  // // --------------------------------------------------------------------
-  // //
-  // recursive_mux #(.A(CLOG2_W), .W(N*8))
-    // recursive_mux_i
-    // (
-      // .select(axi4_read_fifo.araddr[UB:LB]),
-      // .data_in(r_if.register_in),
-      // .data_out(axi4_read_fifo.rdata)
-    // );
+  // --------------------------------------------------------------------
+  recursive_mux #(.A(CLOG2_W), .W(C.N*8))
+    recursive_mux_i
+    (
+      .select(axi4_s._araddr[UB:LB]),
+      .data_in(r_if.register_in),
+      .data_out(axi4_s.rdata)
+    );
 
 
   // // --------------------------------------------------------------------
   // //
   // assign axi4_read_fifo.rid   = 0;
   // assign axi4_read_fifo.rlast = 1;
-  // assign axi4_read_fifo.rresp = 0;
+  assign axi4_s.rresp = 0;
 
 
   // // --------------------------------------------------------------------
   // //
   // assign axi4_write_fifo.bid   = 0;
-  // assign axi4_write_fifo.bresp = 0;
+  assign axi4_s.bresp = 0;
 
 
 // --------------------------------------------------------------------

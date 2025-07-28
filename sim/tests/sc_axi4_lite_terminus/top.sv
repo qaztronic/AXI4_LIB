@@ -35,8 +35,9 @@ import axi4_lite_pkg::*;
     dut(.*);
 
   // --------------------------------------------------------------------
-  bit [    C.A-1:0] addr;
+  /* verilator lint_off UNUSEDSIGNAL */
   bit [(C.N*8)-1:0] data;
+  /* verilator lint_on UNUSEDSIGNAL */
 
    initial
    begin

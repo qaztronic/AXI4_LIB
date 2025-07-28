@@ -16,17 +16,15 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-import axi4_lite_pkg::*;
-
-module axi4_lite_bus_sunder_rd #(axi4_lite_cfg_t C, int M=0)
+module axi4_lite_bus_sunder_rd #(axi4_lite_pkg::axi4_lite_cfg_t C, int M=0)
 ( input        aclk
 , input        aresetn
 , axi4_lite_if axi4_s
 , axi4_lite_if axi4_m[2]
 );
   // --------------------------------------------------------------------
-  axi4_bus_rd_fifo_if rd_fifo(.*);
-  axi4_s_bus_rd_fifos axi4_bus_rd_fifos_i(.*);
+  axi4_bus_rd_fifo_if s_rd_fifo(.*);
+  axi4_s_bus_rd_fifos axi4_s_bus_rd_fifos_i(.rd_fifo(s_rd_fifo), .*);
 
   // --------------------------------------------------------------------
   localparam D = 4;
@@ -36,7 +34,7 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_cfg_t C, int M=0)
   wire full = &count;
 
   always_comb
-    case({rd_fifo.ar_rd_en, rd_fifo.r_wr_en})
+    case({s_rd_fifo.ar_rd_en, s_rd_fifo.r_wr_en})
       'b1_0:   next_count = count + 1;
       'b0_1:   next_count = count - 1;
       default: next_count = count;
@@ -48,112 +46,72 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_cfg_t C, int M=0)
     else
       count <= next_count;
 
-  // // --------------------------------------------------------------------
-  // wire ard_fifo.r_wr_full[2];
-  // wire r_rd_empty[2];
-  // wire ard_fifo.r_wr_en  [2];
-  // wire r_rd_en   [2];
-
-  // axi4_if #(.A(A), .N(N), .I(I))
-    // axi4_out_fifo[2](.*);
-
-  // generate
-  // begin: out_fifo
-    // for(genvar j = 0; j < 2; j++)
-      // axi4_m_to_read_fifos #(A, N, I)
-        // axi4_m_to_read_fifos_i
-        // ( .axi4_m        (axi4_m       [j])
-        // , .axi4_read_fifo(axi4_out_fifo[j])
-        // , .ard_fifo.r_wr_full    (ard_fifo.r_wr_full   [j])
-        // , .ard_fifo.r_wr_en      (ard_fifo.r_wr_en     [j])
-        // , .r_rd_empty    (r_rd_empty   [j])
-        // , .r_rd_en       (r_rd_en      [j])
-        // , .*
-        // );
-  // end
-  // endgenerate
-
   // --------------------------------------------------------------------
-  wire ard_fifo.r_wr_full[2];
-  wire r_rd_empty[2];
-  wire ard_fifo.r_wr_en  [2];
-  wire r_rd_en   [2];
-
-  axi4_if #(.A(A), .N(N), .I(I))
-    axi4_out_fifo[2](.*);
+  axi4_bus_wr_fifo_if m_wr_fifo[2](.*);
 
   generate
-  begin: out_fifo
     for(genvar j = 0; j < 2; j++)
-    
-    
-    
-      axi4_m_to_read_fifos #(A, N, I)
-        axi4_m_to_read_fifos_i
-        ( .axi4_m        (axi4_m       [j])
-        , .axi4_read_fifo(axi4_out_fifo[j])
-        , .ard_fifo.r_wr_full    (ard_fifo.r_wr_full   [j])
-        , .ard_fifo.r_wr_en      (ard_fifo.r_wr_en     [j])
-        , .r_rd_empty    (r_rd_empty   [j])
-        , .r_rd_en       (r_rd_en      [j])
+    begin: out_fifos
+        axi4_m_bus_wr_fifos axi4_m_bus_wr_fifos_i
+        ( .wr_fifo(m_wr_fifo[j])
+        , .axi4_m (axi4_m   [j])
         , .*
         );
-        
-  end
+    end
   endgenerate
 
-  // // --------------------------------------------------------------------
-  // enum reg [1:0]
-  // { LO_ADDR = 2'b01
-  // , HI_ADDR = 2'b10
-  // } state, next_state;
+  // --------------------------------------------------------------------
+  enum reg [1:0]
+  { LO_ADDR = 2'b01
+  , HI_ADDR = 2'b10
+  } state, next_state;
 
-  // // --------------------------------------------------------------------
-  // always_ff @(posedge aclk)
-    // if(~aresetn)
-      // state <= LO_ADDR;
-    // else
-      // state <= next_state;
+  // --------------------------------------------------------------------
+  always_ff @(posedge aclk)
+    if(~aresetn)
+      state <= LO_ADDR;
+    else
+      state <= next_state;
 
-  // // --------------------------------------------------------------------
-  // wire addr_is_lo = (axi4_in_fifo.araddr < M);
+  // --------------------------------------------------------------------
+  wire addr_is_lo = (axi4_s.araddr < C.A'(M));
 
-  // always_comb
-    // case(state)
-      // LO_ADDR:  if(~addr_is_lo & ~rd_fifo.ar_rd_empty & response_done)
-                  // next_state = HI_ADDR;
-                // else
-                  // next_state = LO_ADDR;
+  always_comb
+    case(state)
+      LO_ADDR:  if(~addr_is_lo & ~s_rd_fifo.ar_rd_empty & response_done)
+                  next_state = HI_ADDR;
+                else
+                  next_state = LO_ADDR;
 
-      // HI_ADDR:  if(addr_is_lo & ~rd_fifo.ar_rd_empty & response_done)
-                  // next_state = LO_ADDR;
-                // else
-                  // next_state = HI_ADDR;
+      HI_ADDR:  if(addr_is_lo & ~s_rd_fifo.ar_rd_empty & response_done)
+                  next_state = LO_ADDR;
+                else
+                  next_state = HI_ADDR;
 
-      // default:  next_state = LO_ADDR;
-    // endcase
+      default:  next_state = LO_ADDR;
+    endcase
 
-  // // --------------------------------------------------------------------
-  // wire route_lo = ((state == LO_ADDR) & (next_state == LO_ADDR)) | (next_state == LO_ADDR);
-  // wire route_hi = ((state == HI_ADDR) & (next_state == HI_ADDR)) | (next_state == HI_ADDR);
+  // --------------------------------------------------------------------
+  wire route_lo = ((state == LO_ADDR) & (next_state == LO_ADDR)) | (next_state == LO_ADDR);
+  wire route_hi = ((state == HI_ADDR) & (next_state == HI_ADDR)) | (next_state == HI_ADDR);
 
-  // // --------------------------------------------------------------------
-  // assign axi4_out_fifo[0].araddr = axi4_in_fifo.araddr;
-  // assign axi4_out_fifo[1].araddr = axi4_in_fifo.araddr;
-  // assign axi4_in_fifo.rdata = route_lo ? axi4_out_fifo[0].rdata : axi4_out_fifo[1].rdata;
-  // assign axi4_in_fifo.rresp = route_lo ? axi4_out_fifo[0].rresp : axi4_out_fifo[1].rresp;
+  // --------------------------------------------------------------------
+  assign axi4_m[0].araddr = axi4_s.araddr;
+  assign axi4_m[1].araddr = axi4_s.araddr;
+  assign axi4_s.rdata = route_lo ? axi4_m[0].rdata : axi4_m[1].rdata;
+  assign axi4_s.rresp = route_lo ? axi4_m[0].rresp : axi4_m[1].rresp;
 
-  // // --------------------------------------------------------------------
-  // assign ard_fifo.r_wr_en[0] = route_lo & ~full & ~rd_fifo.ar_rd_empty & ~ard_fifo.r_wr_full[0];
-  // assign r_rd_en [0] = route_lo & ~full & ~rd_fifo.r_wr_full   & ~r_rd_empty[0];
+  // --------------------------------------------------------------------
+  assign m_wr_fifo[0].aw_wr_en = route_lo & ~full & ~s_rd_fifo.ar_rd_empty & ~m_wr_fifo[0].aw_wr_full;
+  assign m_wr_fifo[0].w_rd_en  = route_lo & ~full & ~s_rd_fifo.r_wr_full   & ~m_wr_fifo[0].w_rd_empty;
 
-  // // --------------------------------------------------------------------
-  // assign ard_fifo.r_wr_en[1] = route_hi & ~full & ~rd_fifo.ar_rd_empty & ~ard_fifo.r_wr_full[1];
-  // assign r_rd_en [1] = route_hi & ~full & ~rd_fifo.r_wr_full   & ~r_rd_empty[1];
+  // --------------------------------------------------------------------
+  assign m_wr_fifo[1].aw_wr_en = route_hi & ~full & ~s_rd_fifo.ar_rd_empty & ~m_wr_fifo[1].aw_wr_full;
+  assign m_wr_fifo[1].w_rd_en  = route_hi & ~full & ~s_rd_fifo.r_wr_full   & ~m_wr_fifo[1].w_rd_empty;
 
-  // // --------------------------------------------------------------------
-  // assign rd_fifo.ar_rd_en = ard_fifo.r_wr_en[0] | ard_fifo.r_wr_en[1];
-  // assign rd_fifo.r_wr_en  = r_rd_en [0] | r_rd_en [1];
+  // --------------------------------------------------------------------
+  assign s_rd_fifo.ar_rd_en = m_wr_fifo[0].aw_wr_en | m_wr_fifo[1].aw_wr_en;
+  assign s_rd_fifo.r_wr_en  = m_wr_fifo[0].w_rd_en  | m_wr_fifo[1].w_rd_en ;
 
 // --------------------------------------------------------------------
 endmodule

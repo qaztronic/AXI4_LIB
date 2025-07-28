@@ -16,9 +16,8 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-import axi4_lite_pkg::*;
-
-interface axi4_lite_register_if #(axi4_lite_cfg_t C, int CLOG2_W, int W = 2 ** CLOG2_W)
+/* verilator lint_off UNUSEDSIGNAL */
+interface axi4_lite_register_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0}, int CLOG2_W=0, int W=2 ** CLOG2_W)
 ( input aclk
 , input aresetn
 );
@@ -35,5 +34,6 @@ interface axi4_lite_register_if #(axi4_lite_cfg_t C, int CLOG2_W, int W = 2 ** C
   // synthesis translate_on
   // --------------------------------------------------------------------
 
+/* verilator lint_on UNUSEDSIGNAL */
 // --------------------------------------------------------------------
 endinterface

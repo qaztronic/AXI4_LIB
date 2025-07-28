@@ -16,41 +16,55 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_m_bus_rd_fifos
+module axi4_m_bus_wr_fifos
 ( input        aclk
 , input        aresetn
 , axi4_lite_if axi4_m
-, axi4_bus_rd_fifo_if rd_fifo
+, axi4_bus_wr_fifo_if wr_fifo
 );
   // --------------------------------------------------------------------
   wire clk   = aclk    ;
   wire reset = ~aresetn;
 
   // --------------------------------------------------------------------
-  assign rd_fifo.ar_rd_en = axi4_m.arready & axi4_m.arvalid;
-  assign axi4_m.arvalid   = ~rd_fifo.ar_rd_empty;
+  assign wr_fifo.aw_rd_en = axi4_m.awready & axi4_m.awvalid;
+  assign axi4_m.awvalid   = ~wr_fifo.aw_rd_empty;
 
-  tiny_sync_fifo #(axi4_m.AR_W) ar_fifo
-  ( .wr_full (rd_fifo.ar_wr_full )
-  , .wr_en   (rd_fifo.ar_wr_en   )
-  , .rd_empty(rd_fifo.ar_rd_empty)
-  , .rd_en   (rd_fifo.ar_rd_en   )
-  , .wr_data (axi4_m.ar_flat_in  )
-  , .rd_data (axi4_m.ar_flat_out )
+  tiny_sync_fifo #(axi4_m.AW_W) aw_fifo
+  ( .wr_full (wr_fifo.aw_wr_full )
+  , .wr_en   (wr_fifo.aw_wr_en   )
+  , .rd_empty(wr_fifo.aw_rd_empty)
+  , .rd_en   (wr_fifo.aw_rd_en   )
+  , .wr_data (axi4_m.aw_flat_in  )
+  , .rd_data (axi4_m.aw_flat_out )
   , .*
   );
 
   // --------------------------------------------------------------------
-  assign rd_fifo.r_rd_en = axi4_m.rready & axi4_m.rvalid;
-  assign axi4_m.rvalid   = ~rd_fifo.r_rd_empty;
+  assign wr_fifo.w_rd_en = axi4_m.wready & axi4_m.wvalid;
+  assign axi4_m.wvalid   = ~wr_fifo.w_rd_empty;
 
-  tiny_sync_fifo #(axi4_m.R_W) r_fifo
-  ( .wr_full (rd_fifo.r_wr_full )
-  , .wr_en   (rd_fifo.r_wr_en   )
-  , .rd_empty(rd_fifo.r_rd_empty)
-  , .rd_en   (rd_fifo.r_rd_en   )
-  , .wr_data (axi4_m.r_flat_in  )
-  , .rd_data (axi4_m.r_flat_out )
+  tiny_sync_fifo #(axi4_m.W_W) w_fifo
+  ( .wr_full (wr_fifo.w_wr_full )
+  , .wr_en   (wr_fifo.w_wr_en   )
+  , .rd_empty(wr_fifo.w_rd_empty)
+  , .rd_en   (wr_fifo.w_rd_en   )
+  , .wr_data (axi4_m.w_flat_in  )
+  , .rd_data (axi4_m.w_flat_out )
+  , .*
+  );
+
+  // --------------------------------------------------------------------
+  assign wr_fifo.b_wr_en = axi4_m.bready & axi4_m.bvalid;
+  assign axi4_m.bready   = ~wr_fifo.b_wr_full;
+
+  tiny_sync_fifo #(axi4_m.B_W) b_fifo
+  ( .wr_full (wr_fifo.b_wr_full )
+  , .wr_en   (wr_fifo.b_wr_en   )
+  , .rd_empty(wr_fifo.b_rd_empty)
+  , .rd_en   (wr_fifo.b_rd_en   )
+  , .wr_data (axi4_m.b_flat_in  )
+  , .rd_data (axi4_m.b_flat_out )
   , .*
   );
 
