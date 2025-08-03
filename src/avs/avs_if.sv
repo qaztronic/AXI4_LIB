@@ -1,0 +1,81 @@
+// -------------------------------------------------------------------------------
+// Copyright qaztronic
+// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+//
+// Licensed under the Solderpad Hardware License v 2.1 (the "License"); you may
+// not use this file except in compliance with the License, or, at your option,
+// the Apache License version 2.0. You may obtain a copy of the License at
+//
+// https://solderpad.org/licenses/SHL-2.1/
+//
+// Unless required by applicable law or agreed to in writing, any work distributed
+// under the License is distributed on an "AS IS" BASIS,WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations under the License.
+// -------------------------------------------------------------------------------
+
+interface asv_if #(axis_pkg::axis_cfg_t C)
+/* verilator lint_off UNUSEDSIGNAL */
+( input aclk
+, input aresetn
+);
+  // --------------------------------------------------------------------
+  localparam int N = C.N;
+  localparam int I = C.I > 0 ? C.I : 1;
+  localparam int D = C.D > 0 ? C.D : 1;
+  localparam int U = C.U > 0 ? C.U : 1;
+
+  // --------------------------------------------------------------------
+  wire              tvalid;
+  wire              tready;
+  wire  [(8*N)-1:0] tdata;
+  wire  [N-1:0]     tstrb;
+  wire  [N-1:0]     tkeep;
+  wire              tlast;
+  wire  [I-1:0]     tid;
+  wire  [D-1:0]     tdest;
+  wire  [U-1:0]     tuser;
+/* verilator lint_off UNUSEDSIGNAL */
+
+  // --------------------------------------------------------------------
+  generate
+    if(C.I < 1)
+    begin : omit_tid
+      assign tid = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.D < 1)
+    begin : omit_tdest
+      assign tdest = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.U < 1)
+    begin : omit_tuser
+      assign tuser = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.USE_TSTRB == 1)
+    begin : omit_tstrb
+      assign tuser = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.USE_TKEEP == 1)
+    begin : omit_tkeep
+      assign tuser = 0;
+    end
+  endgenerate
+
+// --------------------------------------------------------------------
+endinterface

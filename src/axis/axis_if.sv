@@ -16,19 +16,21 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-import axis_pkg::*;
+// import axis_pkg::*;
 
-`define USE_MOD_PORTS;
+// `define USE_MOD_PORTS;
 
-interface axis_if #(axis_cfg_t CONFIG)
+interface axis_if #(axis_pkg::axis_cfg_t C)
+/* verilator lint_off UNUSEDSIGNAL */
+/* verilator lint_off UNOPTFLAT */
 ( input aclk
 , input aresetn
 );
   // --------------------------------------------------------------------
-  localparam int N = CONFIG.N;
-  localparam int I = CONFIG.I > 0 ? CONFIG.I : 1;
-  localparam int D = CONFIG.D > 0 ? CONFIG.D : 1;
-  localparam int U = CONFIG.U > 0 ? CONFIG.U : 1;
+  localparam int N = C.N;
+  localparam int I = C.I > 0 ? C.I : 1;
+  localparam int D = C.D > 0 ? C.D : 1;
+  localparam int U = C.U > 0 ? C.U : 1;
 
   // --------------------------------------------------------------------
   wire              tvalid;
@@ -40,92 +42,134 @@ interface axis_if #(axis_cfg_t CONFIG)
   wire  [I-1:0]     tid;
   wire  [D-1:0]     tdest;
   wire  [U-1:0]     tuser;
-
-// --------------------------------------------------------------------
-// synthesis translate_off
-  default clocking cb_m @(posedge aclk);
-    input   aresetn;
-    output  tvalid;
-    input   tready;
-    output  tdata;
-    output  tstrb;
-    output  tkeep;
-    output  tlast;
-    output  tid;
-    output  tdest;
-    output  tuser;
-  endclocking
+/* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on UNOPTFLAT */
 
   // --------------------------------------------------------------------
-  clocking cb_s @(posedge aclk);
-    input   aresetn;
-    input   tvalid;
-    output  tready;
-    input   tdata;
-    input   tstrb;
-    input   tkeep;
-    input   tlast;
-    input   tid;
-    input   tdest;
-    input   tuser;
-  endclocking
-// synthesis translate_on
-// --------------------------------------------------------------------
-
+  generate
+    if(C.I < 1)
+    begin : omit_tid
+      assign tid = 0;
+    end
+  endgenerate
+  
   // --------------------------------------------------------------------
-  //
-`ifdef USE_MOD_PORTS
-    modport
-      master
-      (
-// --------------------------------------------------------------------
-// synthesis translate_off
-          clocking  cb_m,
-// synthesis translate_on
-// --------------------------------------------------------------------
-        input     aresetn,
-        input     aclk,
-        output    tvalid,
-        input     tready,
-        output    tdata,
-        output    tstrb,
-        output    tkeep,
-        output    tlast,
-        output    tid,
-        output    tdest,
-        output    tuser
-      );
+  generate
+    if(C.D < 1)
+    begin : omit_tdest
+      assign tdest = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.U < 1)
+    begin : omit_tuser
+      assign tuser = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.USE_TSTRB == 1)
+    begin : omit_tstrb
+      assign tuser = 0;
+    end
+  endgenerate
+  
+  // --------------------------------------------------------------------
+  generate
+    if(C.USE_TKEEP == 1)
+    begin : omit_tkeep
+      assign tuser = 0;
+    end
+  endgenerate
+  
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+  // default clocking cb_m @(posedge aclk);
+    // input   aresetn;
+    // output  tvalid;
+    // input   tready;
+    // output  tdata;
+    // output  tstrb;
+    // output  tkeep;
+    // output  tlast;
+    // output  tid;
+    // output  tdest;
+    // output  tuser;
+  // endclocking
 
-    // --------------------------------------------------------------------
-    modport
-      slave
-      (
-// --------------------------------------------------------------------
-// synthesis translate_off
-          clocking  cb_s,
-// synthesis translate_on
-// --------------------------------------------------------------------
-        input     aresetn,
-        input     aclk,
-        input     tvalid,
-        output    tready,
-        input     tdata,
-        input     tstrb,
-        input     tkeep,
-        input     tlast,
-        input     tid,
-        input     tdest,
-        input     tuser
-      );
-`endif
+  // // --------------------------------------------------------------------
+  // clocking cb_s @(posedge aclk);
+    // input   aresetn;
+    // input   tvalid;
+    // output  tready;
+    // input   tdata;
+    // input   tstrb;
+    // input   tkeep;
+    // input   tlast;
+    // input   tid;
+    // input   tdest;
+    // input   tuser;
+  // endclocking
+// // synthesis translate_on
+// // --------------------------------------------------------------------
 
-// --------------------------------------------------------------------
-// synthesis translate_off
-  task zero_cycle_delay;
-    ##0;
-  endtask: zero_cycle_delay
-// synthesis translate_on
-// --------------------------------------------------------------------
+  // // --------------------------------------------------------------------
+  // //
+// `ifdef USE_MOD_PORTS
+    // modport
+      // master
+      // (
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+          // clocking  cb_m,
+// // synthesis translate_on
+// // --------------------------------------------------------------------
+        // input     aresetn,
+        // input     aclk,
+        // output    tvalid,
+        // input     tready,
+        // output    tdata,
+        // output    tstrb,
+        // output    tkeep,
+        // output    tlast,
+        // output    tid,
+        // output    tdest,
+        // output    tuser
+      // );
+
+    // // --------------------------------------------------------------------
+    // modport
+      // slave
+      // (
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+          // clocking  cb_s,
+// // synthesis translate_on
+// // --------------------------------------------------------------------
+        // input     aresetn,
+        // input     aclk,
+        // input     tvalid,
+        // output    tready,
+        // input     tdata,
+        // input     tstrb,
+        // input     tkeep,
+        // input     tlast,
+        // input     tid,
+        // input     tdest,
+        // input     tuser
+      // );
+// `endif
+
+// // --------------------------------------------------------------------
+// // synthesis translate_off
+  // task zero_cycle_delay;
+    // ##0;
+  // endtask: zero_cycle_delay
+// // synthesis translate_on
+// // --------------------------------------------------------------------
 
 // --------------------------------------------------------------------
 endinterface
