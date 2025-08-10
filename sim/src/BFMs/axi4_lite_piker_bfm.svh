@@ -1,20 +1,16 @@
-// --------------------------------------------------------------------
-// Copyright qaztronic
-// SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+// -----------------------------------------------------------------------------
+// Copyright qaztronic    |    SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
-// Licensed under the Solderpad Hardware License v 2.1 (the "License");
-// you may not use this file except in compliance with the License, or,
-// at your option, the Apache License version 2.0. You may obtain a copy
-// of the License at
-//
+// Licensed under the Solderpad Hardware License v 2.1 (the "License"); you may
+// not use this file except in compliance with the License, or, at your option,
+// the Apache License version 2.0. You may obtain a copy of the License at
 // https://solderpad.org/licenses/SHL-2.1/
 //
-// Unless required by applicable law or agreed to in writing, any work
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-// implied. See the License for the specific language governing
-// permissions and limitations under the License.
-// --------------------------------------------------------------------
+// Unless required by applicable law, any work distributed under the License is
+// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+// -----------------------------------------------------------------------------
 logic [    C.A-1:0] araddr  = 'x;
 logic               arvalid =  0;
 logic [    C.A-1:0] awaddr  = 'x;
@@ -52,7 +48,7 @@ task axi4_lite_read
   wait(axi4_s.rvalid);
   @(negedge aclk);
   data = axi4_s.rdata;
-  $display("[%0t] axi4_lite_read  @ araddr: %x | rdata: %x", $time, addr, axi4_s.rdata);
+  $display("[%8t] axi4_lite_read  @ araddr: %x | rdata: %x", $time, addr, axi4_s.rdata);
   rready = 1;
 
   @(negedge aclk);
@@ -87,7 +83,7 @@ task axi4_lite_write
 
   wait(axi4_s.bvalid);
   @(negedge aclk);
-  $display("[%0t] axi4_lite write @ awaddr: %x | wdata: %x", $time, addr, data);
+  $display("[%8t] axi4_lite write @ awaddr: %x | wdata: %x", $time, addr, data);
   bready = 1;
 
   @(negedge aclk);
