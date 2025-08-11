@@ -49,8 +49,6 @@ interface axi4_bus_rd_fifo_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
   wire [        1:0] rresp;
   /* verilator lint_on UNDRIVEN */
   axi4_lite_r_t r;
-  assign r.data = rdata;
-  assign r.resp = rresp;
   wire [R_W-1:0] r_flat_in;
   assign r_flat_in = r;
 
