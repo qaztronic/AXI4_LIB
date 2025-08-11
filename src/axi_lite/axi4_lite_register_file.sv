@@ -75,6 +75,7 @@ import axi4_lite_pkg::*;
   // --------------------------------------------------------------------
   wire [(C.N*8)-1:0] data_out;
   assign rd_fifo.r.data = data_out;
+  assign rd_fifo.r.resp = 0;
 
   recursive_mux #(.A(CLOG2_W), .W(C.N*8))
     recursive_mux_i
@@ -84,7 +85,7 @@ import axi4_lite_pkg::*;
     );
 
   // ---------------------------------------------------------------------------
-  assign rd_fifo.rresp = 0;
+  // assign rd_fifo.rresp = 0;
   assign axi4_s.bresp  = wr_fifo._bresp;
 
 // -----------------------------------------------------------------------------
