@@ -1,45 +1,24 @@
-//////////////////////////////////////////////////////////////////////
-////                                                              ////
-//// Copyright (C) 2016 Authors and OPENCORES.ORG                 ////
-////                                                              ////
-//// This source file may be used and distributed without         ////
-//// restriction provided that this copyright statement is not    ////
-//// removed from the file and that any derivative work contains  ////
-//// the original copyright notice and the associated disclaimer. ////
-////                                                              ////
-//// This source file is free software; you can redistribute it   ////
-//// and/or modify it under the terms of the GNU Lesser General   ////
-//// Public License as published by the Free Software Foundation; ////
-//// either version 2.1 of the License, or (at your option) any   ////
-//// later version.                                               ////
-////                                                              ////
-//// This source is distributed in the hope that it will be       ////
-//// useful, but WITHOUT ANY WARRANTY; without even the implied   ////
-//// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      ////
-//// PURPOSE.  See the GNU Lesser General Public License for more ////
-//// details.                                                     ////
-////                                                              ////
-//// You should have received a copy of the GNU Lesser General    ////
-//// Public License along with this source; if not, download it   ////
-//// from http://www.opencores.org/lgpl.shtml                     ////
-////                                                              ////
-//////////////////////////////////////////////////////////////////////
-
-
-// --------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Copyright qaztronic    |    SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 //
-module
-  cummings_sync_r2w
-  #(
-    parameter ADDRSIZE
-  )
-  (
-    output reg [ADDRSIZE:0] wq2_rptr,
-    input [ADDRSIZE:0]      rptr,
-    input                   wclk,
-    input                   wrst_n
-  );
+// Licensed under the Solderpad Hardware License v 2.1 (the "License"); you may
+// not use this file except in compliance with the License, or, at your option,
+// the Apache License version 2.0. You may obtain a copy of the License at
+// https://solderpad.org/licenses/SHL-2.1/
+//
+// Unless required by applicable law, any work distributed under the License is
+// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the specific language
+// governing permissions and limitations under the License.
+// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+module cummings_sync_r2w #(ADDRSIZE=0)
+( output reg [ADDRSIZE:0] wq2_rptr
+, input      [ADDRSIZE:0] rptr
+, input                   wclk
+, input                   wrst_n
+);
   reg [ADDRSIZE:0] wq1_rptr;
 
   always @(posedge wclk or negedge wrst_n)
@@ -47,24 +26,15 @@ module
       {wq2_rptr,wq1_rptr} <= 0;
     else
       {wq2_rptr,wq1_rptr} <= {wq1_rptr,rptr};
-
 endmodule
 
-
-// --------------------------------------------------------------------
-//
-module
-  cummings_sync_w2r
-  #(
-    parameter ADDRSIZE
-  )
-  (
-    output reg  [ADDRSIZE:0]  rq2_wptr,
-    input       [ADDRSIZE:0]  wptr,
-    input                     rclk,
-    input                     rrst_n
-  );
-
+// -----------------------------------------------------------------------------
+module cummings_sync_w2r #(ADDRSIZE=0)
+( output reg  [ADDRSIZE:0]  rq2_wptr
+, input       [ADDRSIZE:0]  wptr
+, input                     rclk
+, input                     rrst_n
+);
   reg [ADDRSIZE:0] rq1_wptr;
 
   always @(posedge rclk or negedge rrst_n)
@@ -72,28 +42,18 @@ module
       {rq2_wptr,rq1_wptr} <= 0;
     else
       {rq2_wptr,rq1_wptr} <= {rq1_wptr,wptr};
-
 endmodule
 
-
-// --------------------------------------------------------------------
-//
-module
-  cummings_fifomem
-  #(
-    parameter DATASIZE,   // Memory data word width
-    parameter ADDRSIZE    // Number of mem address bits
-  )
-  (
-    output [DATASIZE-1:0] rdata,
-    input [DATASIZE-1:0]  wdata,
-    input [ADDRSIZE-1:0]  waddr,
-    input [ADDRSIZE-1:0]  raddr,
-    input wclken,
-    input wfull,
-    input wclk
-  );
-
+// -----------------------------------------------------------------------------
+module cummings_fifomem #(DATASIZE=0, ADDRSIZE=0)
+( output [DATASIZE-1:0] rdata
+, input  [DATASIZE-1:0] wdata
+, input  [ADDRSIZE-1:0] waddr
+, input  [ADDRSIZE-1:0] raddr
+, input                 wclken
+, input                 wfull
+, input                 wclk
+);
   // RTL Verilog memory model
   localparam DEPTH = 1<<ADDRSIZE;
   reg [DATASIZE-1:0] mem [0:DEPTH-1];
@@ -102,28 +62,19 @@ module
   always @(posedge wclk)
     if(wclken && !wfull)
       mem[waddr] <= wdata;
-
 endmodule
 
-
-// --------------------------------------------------------------------
-//
-module
-  cummings_rptr_empty
-  #(
-    parameter ADDRSIZE
-  )
-  (
-    output reg                  rempty,
-    output      [ADDRSIZE-1:0]  raddr,
-    output reg  [ADDRSIZE :0]   rptr,
-    input       [ADDRSIZE :0]   rq2_wptr,
-    input                       rinc,
-    input                       rclk,
-    input                       rrst_n
-  );
-
-  reg [ADDRSIZE:0] rbin;
+// -----------------------------------------------------------------------------
+module cummings_rptr_empty #(ADDRSIZE=0)
+( output reg                  rempty
+, output      [ADDRSIZE-1:0]  raddr
+, output reg  [ADDRSIZE  :0]  rptr
+, input       [ADDRSIZE  :0]  rq2_wptr
+, input                       rinc
+, input                       rclk
+, input                       rrst_n
+);
+  reg  [ADDRSIZE:0] rbin;
   wire [ADDRSIZE:0] rgraynext, rbinnext;
 
   //-------------------
@@ -136,8 +87,8 @@ module
       {rbin, rptr} <= {rbinnext, rgraynext};
 
   // Memory read-address pointer (okay to use binary to address memory)
-  assign raddr = rbin[ADDRSIZE-1:0];
-  assign rbinnext = rbin + (rinc & ~rempty);
+  assign raddr     = rbin[ADDRSIZE-1:0];
+  assign rbinnext  = rbin + (rinc & ~rempty);
   assign rgraynext = (rbinnext>>1) ^ rbinnext;
 
   //---------------------------------------------------------------
@@ -150,28 +101,19 @@ module
       rempty <= 1'b1;
     else
       rempty <= rempty_val;
-
 endmodule
 
-
-// --------------------------------------------------------------------
-//
-module
-  cummings_wptr_full
-  #(
-    parameter ADDRSIZE
-  )
-  (
-    output reg                  wfull,
-    output      [ADDRSIZE-1:0]  waddr,
-    output reg  [ADDRSIZE :0]   wptr,
-    input       [ADDRSIZE :0]   wq2_rptr,
-    input                       winc,
-    input                       wclk,
-    input                       wrst_n
-  );
-
-  reg [ADDRSIZE:0] wbin;
+// -----------------------------------------------------------------------------
+module cummings_wptr_full #(ADDRSIZE=0)
+( output reg                  wfull
+, output      [ADDRSIZE-1:0]  waddr
+, output reg  [ADDRSIZE  :0]  wptr
+, input       [ADDRSIZE  :0]  wq2_rptr
+, input                       winc
+, input                       wclk
+, input                       wrst_n
+);
+  reg  [ADDRSIZE:0] wbin;
   wire [ADDRSIZE:0] wgraynext, wbinnext;
 
   // GRAYSTYLE2 pointer
@@ -182,8 +124,8 @@ module
       {wbin, wptr} <= {wbinnext, wgraynext};
 
   // Memory write-address pointer (okay to use binary to address memory)
-  assign waddr = wbin[ADDRSIZE-1:0];
-  assign wbinnext = wbin + (winc & ~wfull);
+  assign waddr     = wbin[ADDRSIZE-1:0];
+  assign wbinnext  = wbin + (winc & ~wfull);
   assign wgraynext = (wbinnext>>1) ^ wbinnext;
 
   //------------------------------------------------------------------
@@ -199,33 +141,23 @@ module
       wfull <= 1'b0;
     else
       wfull <= wfull_val;
-
 endmodule
 
-
-// --------------------------------------------------------------------
-//
-module
-  cummings_fifo1
-  #(
-    parameter DSIZE,
-    parameter ASIZE
-  )
-  (
-    output [DSIZE-1:0]  rdata,
-    output              wfull,
-    output              rempty,
-    input [DSIZE-1:0]   wdata,
-    input               winc,
-    input               wclk,
-    input               wrst_n,
-    input               rinc,
-    input               rclk,
-    input               rrst_n
-  );
-
+// -----------------------------------------------------------------------------
+module cummings_fifo1 #(DSIZE=0, ASIZE=0)
+( output [DSIZE-1:0]  rdata
+, output              wfull
+, output              rempty
+, input [DSIZE-1:0]   wdata
+, input               winc
+, input               wclk
+, input               wrst_n
+, input               rinc
+, input               rclk
+, input               rrst_n
+);
   wire [ASIZE-1:0] waddr, raddr;
-  wire [ASIZE:0] wptr, rptr, wq2_rptr, rq2_wptr;
+  wire [ASIZE  :0] wptr, rptr, wq2_rptr, rq2_wptr;
 
   cummings_sync_r2w #(ASIZE) sync_r2w (.wq2_rptr(wq2_rptr), .rptr(rptr),
   .wclk(wclk), .wrst_n(wrst_n));
@@ -251,69 +183,45 @@ module
   .wptr(wptr), .wq2_rptr(wq2_rptr),
   .winc(winc), .wclk(wclk),
   .wrst_n(wrst_n));
-
 endmodule
-// --------------------------------------------------------------------
-//
 
-
-// --------------------------------------------------------------------
-//
-// --------------------------------------------------------------------
-
-
-module
-  async_fifo
-  #(
-    W,
-    D
-  )
-  (
-    output            wr_full,
-    input  [W-1:0]    wr_data,
-    input             wr_en,
-    input             wr_clk,
-    input             wr_reset,
-
-    output            rd_empty,
-    output  [W-1:0]   rd_data,
-    input             rd_en,
-    input             rd_clk,
-    input             rd_reset
-  );
-
-  // --------------------------------------------------------------------
-  //
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+module async_fifo #(W=0, D=0)
+( output            wr_full
+, input  [W-1:0]    wr_data
+, input             wr_en
+, input             wr_clk
+, input             wr_reset
+, output            rd_empty
+, output  [W-1:0]   rd_data
+, input             rd_en
+, input             rd_clk
+, input             rd_reset
+);
+  // -----------------------------------------------------------------------------
   cummings_fifo1 #(.DSIZE(W), .ASIZE($clog2(D)))
     cummings_fifo1_i
-    (
-      .rdata(rd_data),
-      .wfull(wr_full),
-      .rempty(rd_empty),
-      .wdata(wr_data),
-      .winc(wr_en),
-      .wclk(wr_clk),
-      .wrst_n(~wr_reset),
-      .rinc(rd_en),
-      .rclk(rd_clk),
-      .rrst_n(~rd_reset)
+    ( .rdata (rd_data  )
+    , .wfull (wr_full  )
+    , .rempty(rd_empty )
+    , .wdata (wr_data  )
+    , .winc  (wr_en    )
+    , .wclk  (wr_clk   )
+    , .wrst_n(~wr_reset)
+    , .rinc  (rd_en    )
+    , .rclk  (rd_clk   )
+    , .rrst_n(~rd_reset)
     );
 
-
-// --------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // synthesis translate_off
   always_ff @(posedge wr_clk)
     if(wr_en & wr_full)
-      $stop;
+      $error("!!! [%8t] | %m | wr_en & wr_full", $time);
   always_ff @(posedge rd_clk)
     if(rd_en & rd_empty)
-      $stop;
+      $error("!!! [%8t] | %m | rd_en & rd_empty", $time);
 // synthesis translate_on
-// --------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------
-//
+// -----------------------------------------------------------------------------
 endmodule
-
-
