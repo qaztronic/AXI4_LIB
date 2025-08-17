@@ -17,7 +17,7 @@ interface axi4_lite_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
 , input aresetn
 );
 import axi4_lite_pkg::*;
-  // --------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   wire [    C.A-1:0] araddr ;
   wire               arready;
   wire               arvalid;
@@ -35,10 +35,8 @@ import axi4_lite_pkg::*;
   wire               wready ;
   wire               wvalid ;
 
-  // --------------------------------------------------------------------
-  /* verilator lint_off UNUSEDSIGNAL */
+  // ---------------------------------------------------------------------------
   wire [C.N-1:0] wstrb;
-  /* verilator lint_on UNUSEDSIGNAL */
 
   generate
     if(C.USE_STRB == 0)
@@ -47,11 +45,9 @@ import axi4_lite_pkg::*;
     end
   endgenerate
 
-  // --------------------------------------------------------------------
-  /* verilator lint_off UNUSEDSIGNAL */
+  // ---------------------------------------------------------------------------
   wire [2:0] arprot;
   wire [2:0] awprot;
-  /* verilator lint_on UNUSEDSIGNAL */
 
   generate
     if(C.USE_PROT == 0)
@@ -61,16 +57,14 @@ import axi4_lite_pkg::*;
     end
   endgenerate
 
-  // --------------------------------------------------------------------
-  /* verilator lint_off ASCRANGE */
-  /* verilator lint_off UNUSEDSIGNAL */
+  // ---------------------------------------------------------------------------
+/* verilator lint_off ASCRANGE */
   wire [C.I-1:0] arid;
   wire [C.I-1:0] awid;
   wire [C.I-1:0] bid ;
   wire [C.I-1:0] rid ;
   wire [C.I-1:0] wid ;
-  /* verilator lint_on ASCRANGE */
-  /* verilator lint_on UNUSEDSIGNAL */
+/* verilator lint_on ASCRANGE */
 
   generate
     if(C.I < 1)
@@ -83,34 +77,55 @@ import axi4_lite_pkg::*;
     end
   endgenerate
 
-  // -----------------------------------------------------------------------------
-  /* verilator lint_off UNUSEDSIGNAL */
-  clocking cb_s @(posedge aclk);
-    input   araddr;
-    input   awid;
-    output  arready;
-    input   arvalid;
-    input   awaddr;
-    output  awready;
-    input   awvalid;
-    input   bready;
-    output  bid;
-    output  bresp;
-    output  bvalid;
-    output  rdata;
-    output  rid;
-    input   rready;
-    output  rresp;
-    output  rvalid;
-    input   wdata;
-    input   wid;
-    output  wready;
-    input   wstrb;
-    input   wvalid;
-    input   aresetn;
-    input   aclk;
-  endclocking
-  /* verilator lint_on UNUSEDSIGNAL */
+  // // ---------------------------------------------------------------------------
+  // clocking cb_s @(posedge aclk);
+    // input   araddr;
+    // input   awid;
+    // output  arready;
+    // input   arvalid;
+    // input   awaddr;
+    // output  awready;
+    // input   awvalid;
+    // input   bready;
+    // output  bid;
+    // output  bresp;
+    // output  bvalid;
+    // output  rdata;
+    // output  rid;
+    // input   rready;
+    // output  rresp;
+    // output  rvalid;
+    // input   wdata;
+    // input   wid;
+    // output  wready;
+    // input   wstrb;
+    // input   wvalid;
+    // input   aresetn;
+    // input   aclk;
+  // endclocking
 
-// --------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // synthesis translate_off
+  generate initial
+  begin : initial_check
+    $display("@@@ | [%8t] | %m | initial IDs | awaddr :%0x | bresp :%0x | wdata :%0x | wstrb :%0x"
+            , $time, awaddr, bresp, wdata, wstrb);
+
+    $display("@@@ | [%8t] | %m | initial IDs | arid :%0x | awid :%0x | bid :%0x | rid :%0x | wid :%0x"
+            , $time, arid, awid, bid, rid, wid);
+
+    $display("@@@ | [%8t] | %m | initial IDs | arprot :%0x | awprot", $time, arprot, awprot);
+  end
+  endgenerate
+
+  always_comb if(~aresetn & (arvalid | awvalid | bvalid | rvalid | wvalid))
+    $warning("!!! | [%8t] valid assteted during reset!", $time);
+
+  always_ff @(posedge aclk) if(aresetn === 'x)
+    $error("!!! | [%8t] | %m | aresetn === x", $time);
+
+  // synthesis translate_on
+  // ---------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
 endinterface

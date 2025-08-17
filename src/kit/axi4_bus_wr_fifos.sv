@@ -12,20 +12,20 @@
 // governing permissions and limitations under the License.
 // -----------------------------------------------------------------------------
 
-module axi4_s_bus_wr_fifos
+module axi4_bus_wr_fifos
 ( input        aclk
 , input        aresetn
-, axi4_lite_if axi4_s
+, axi4_lite_if axi4_bus
 , axi4_bus_wr_fifo_if wr_fifo
 );
-  // --------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   wire clk   = aclk    ;
   wire reset = ~aresetn;
 
-  // --------------------------------------------------------------------
-  assign wr_fifo.aw_wr_en = axi4_s.awready & axi4_s.awvalid;
-  assign wr_fifo.awaddr   = axi4_s.awaddr;
-  assign axi4_s.awready   = ~wr_fifo.aw_wr_full;
+  // ---------------------------------------------------------------------------
+  assign wr_fifo.aw_wr_en = axi4_bus.awready & axi4_bus.awvalid;
+  assign wr_fifo.awaddr   = axi4_bus.awaddr;
+  assign axi4_bus.awready   = ~wr_fifo.aw_wr_full;
 
   tiny_sync_fifo #(wr_fifo.AW_W) aw_fifo
   ( .wr_full (wr_fifo.aw_wr_full )
@@ -37,10 +37,10 @@ module axi4_s_bus_wr_fifos
   , .*
   );
 
-  // --------------------------------------------------------------------
-  assign wr_fifo.w_wr_en = axi4_s.wready & axi4_s.wvalid;
-  assign wr_fifo.wdata   = axi4_s.wdata;
-  assign axi4_s.wready   = ~wr_fifo.w_wr_full;
+  // ---------------------------------------------------------------------------
+  assign wr_fifo.w_wr_en = axi4_bus.wready & axi4_bus.wvalid;
+  assign wr_fifo.wdata   = axi4_bus.wdata;
+  assign axi4_bus.wready   = ~wr_fifo.w_wr_full;
 
   tiny_sync_fifo #(wr_fifo.W_W) w_fifo
   ( .wr_full (wr_fifo.w_wr_full )
@@ -52,9 +52,9 @@ module axi4_s_bus_wr_fifos
   , .*
   );
 
-  // --------------------------------------------------------------------
-  assign wr_fifo.b_rd_en = axi4_s.bready & axi4_s.bvalid;
-  assign axi4_s.bvalid   = ~wr_fifo.b_rd_empty;
+  // ---------------------------------------------------------------------------
+  assign wr_fifo.b_rd_en = axi4_bus.bready & axi4_bus.bvalid;
+  assign axi4_bus.bvalid   = ~wr_fifo.b_rd_empty;
 
   tiny_sync_fifo #(wr_fifo.B_W) b_fifo
   ( .wr_full (wr_fifo.b_wr_full )
@@ -66,5 +66,5 @@ module axi4_s_bus_wr_fifos
   , .*
   );
 
-// --------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 endmodule

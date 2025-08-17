@@ -12,20 +12,20 @@
 // governing permissions and limitations under the License.
 // -----------------------------------------------------------------------------
 
-module axi4_s_bus_rd_fifos
+module axi4_bus_rd_fifos
 ( input        aclk
 , input        aresetn
-, axi4_lite_if axi4_s
+, axi4_lite_if axi4_bus
 , axi4_bus_rd_fifo_if rd_fifo
 );
-  // --------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   wire clk   = aclk    ;
   wire reset = ~aresetn;
 
-  // --------------------------------------------------------------------
-  assign rd_fifo.ar_wr_en = axi4_s.arready & axi4_s.arvalid;
-  assign rd_fifo.araddr   = axi4_s.araddr;
-  assign axi4_s.arready   = ~rd_fifo.ar_wr_full;
+  // ---------------------------------------------------------------------------
+  assign rd_fifo.ar_wr_en = axi4_bus.arready & axi4_bus.arvalid;
+  assign rd_fifo.araddr   = axi4_bus.araddr;
+  assign axi4_bus.arready   = ~rd_fifo.ar_wr_full;
 
   tiny_sync_fifo #(rd_fifo.AR_W) ar_fifo
   ( .wr_full (rd_fifo.ar_wr_full  )
@@ -37,11 +37,11 @@ module axi4_s_bus_rd_fifos
   , .*
   );
 
-  // --------------------------------------------------------------------
-  assign rd_fifo.r_rd_en = axi4_s.rready & axi4_s.rvalid;
-  assign axi4_s.rdata    = rd_fifo._rdata;
-  assign axi4_s.rresp    = rd_fifo._rresp;
-  assign axi4_s.rvalid   = ~rd_fifo.r_rd_empty;
+  // ---------------------------------------------------------------------------
+  assign rd_fifo.r_rd_en = axi4_bus.rready & axi4_bus.rvalid;
+  assign axi4_bus.rdata    = rd_fifo._rdata;
+  assign axi4_bus.rresp    = rd_fifo._rresp;
+  assign axi4_bus.rvalid   = ~rd_fifo.r_rd_empty;
 
   tiny_sync_fifo #(rd_fifo.R_W) r_fifo
   ( .wr_full (rd_fifo.r_wr_full  )
@@ -53,5 +53,5 @@ module axi4_s_bus_rd_fifos
   , .*
   );
 
-// --------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 endmodule

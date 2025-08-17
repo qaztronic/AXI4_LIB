@@ -14,10 +14,10 @@
 
 interface axi4_bus_rd_fifo_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
 /* verilator lint_off UNUSEDSIGNAL */
+  /* verilator lint_off UNDRIVEN */
 ( input aclk
 , input aresetn
 );
-/* verilator lint_on UNUSEDSIGNAL */
   // --------------------------------------------------------------------
   wire ar_rd_en;
   wire ar_rd_empty;
@@ -45,11 +45,9 @@ interface axi4_bus_rd_fifo_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
 
   // --------------------------------------------------------------------
   /* verilator lint_off UNUSEDSIGNAL */
-  /* verilator lint_off UNDRIVEN */
   wire [(8*C.N)-1:0] rdata;
   wire [        1:0] rresp;
   /* verilator lint_on UNUSEDSIGNAL */
-  /* verilator lint_on UNDRIVEN */
   axi4_lite_r_t r;
   wire [R_W-1:0] r_flat_in;
   assign r_flat_in = r;
@@ -81,3 +79,5 @@ interface axi4_bus_rd_fifo_if #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0})
 
 // --------------------------------------------------------------------
 endinterface
+/* verilator lint_on UNUSEDSIGNAL */
+  /* verilator lint_on UNDRIVEN */

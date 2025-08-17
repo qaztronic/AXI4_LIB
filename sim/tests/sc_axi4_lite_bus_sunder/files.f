@@ -6,18 +6,19 @@
 --top-module top
 
 #
++incdir+../../../src/axi_lite
 ../../../src/axi_lite/axi4_lite_pkg.sv
 ../../../src/axi_lite/axi4_lite_if.sv
 
 ../../../src/kit/axi4_bus_wr_fifo_if.sv
 ../../../src/kit/axi4_bus_rd_fifo_if.sv
-../../../src/kit/axi4_s_bus_wr_fifos.sv
-../../../src/kit/axi4_s_bus_rd_fifos.sv
-../../../src/kit/axi4_m_bus_wr_fifos.sv
-../../../src/kit/axi4_m_bus_rd_fifos.sv
+../../../src/kit/axi4_bus_wr_fifos.sv
+../../../src/kit/axi4_bus_rd_fifos.sv
+# ../../../src/kit/axi4_m_bus_wr_fifos.sv
+# ../../../src/kit/axi4_m_bus_rd_fifos.sv
 
 ../../../src/axi_lite/axi4_lite_bus_sunder_rd.sv
-../../../src/axi_lite/axi4_lite_bus_sunder_wr.sv
+# ../../../src/axi_lite/axi4_lite_bus_sunder_wr.sv
 ../../../src/axi_lite/axi4_lite_bus_sunder.sv
 
 # ../../../src/axi_lite/axi4_lite_default_slave.sv
@@ -37,6 +38,7 @@
 # ../../../src/axi_lite/axi4_lite_fanout.sv
 ../../../src/axi_lite/axi4_lite_register_file.sv
 ../../../src/axi_lite/axi4_lite_register_if.sv
+../../../src/axi_lite/axi4_lite_terminus.sv
 
 ../../../src/basal/FIFOs/tiny_sync_fifo.sv
 ../../../src/basal/misc/recursive_mux.sv

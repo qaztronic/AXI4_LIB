@@ -72,6 +72,8 @@ import axi4_lite_pkg::*;
     axi4_lite_read ('h04, data       );
     axi4_lite_read ('h3c, data       );
     axi4_lite_read ('h04, data       );
+    axi4_lite_write('h04, 'habcd_1234);
+    axi4_lite_read ('h04, data       );
 
     repeat(8) @(posedge aclk);
 

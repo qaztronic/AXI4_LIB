@@ -11,8 +11,8 @@
 
 ../../../src/kit/axi4_bus_wr_fifo_if.sv
 ../../../src/kit/axi4_bus_rd_fifo_if.sv
-../../../src/kit/axi4_s_bus_wr_fifos.sv
-../../../src/kit/axi4_s_bus_rd_fifos.sv
+../../../src/kit/axi4_bus_wr_fifos.sv
+../../../src/kit/axi4_bus_rd_fifos.sv
 
 ../../../src/axi_lite/axi4_lite_register_file.sv
 ../../../src/axi_lite/axi4_lite_register_if.sv

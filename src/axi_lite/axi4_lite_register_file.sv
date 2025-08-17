@@ -32,7 +32,7 @@ import axi4_lite_pkg::*;
   assign wr_fifo.w_rd_en  = rf_wr_en;
   assign wr_fifo.b_wr_en  = rf_wr_en;
 
-  axi4_s_bus_wr_fifos axi4_bus_wr_fifos_i(.*);
+  axi4_bus_wr_fifos axi4_bus_wr_fifos_i(.axi4_bus(axi4_s), .*);
 
   // --------------------------------------------------------------------
   assign r_if.wdata = wr_fifo._wdata;
@@ -59,7 +59,7 @@ import axi4_lite_pkg::*;
   assign rd_fifo.ar_rd_en = rf_rd_en;
   assign rd_fifo.r_wr_en  = rf_rd_en;
 
-  axi4_s_bus_rd_fifos axi4_bus_rd_fifos_i(.*);
+  axi4_bus_rd_fifos axi4_bus_rd_fifos_i(.axi4_bus(axi4_s), .*);
 
   // --------------------------------------------------------------------
   wire rd_select [W-1:0];
