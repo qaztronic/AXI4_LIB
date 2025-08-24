@@ -16,7 +16,7 @@
 // permissions and limitations under the License.
 // --------------------------------------------------------------------
 
-module axi4_lite_terminus #(axi4_lite_pkg::axi4_lite_cfg_t C, int D='hbaadc0de)
+module axi4_lite_terminus #(axi4_lite_pkg::axi4_lite_cfg_t C='{default:0}, int D='hbaadc0de)
 ( input        aclk
 , input        aresetn
 , axi4_lite_if axi4_s

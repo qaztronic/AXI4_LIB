@@ -48,12 +48,14 @@ module axi4_lite_register_slice #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0}
   );
 
   // ---------------------------------------------------------------------------
-  assign wr_fifo_if.w_wr_en = axi4_s.wready & axi4_m.wvalid;
+  assign wr_fifo_if.w_wr_en = axi4_s.wready & axi4_s.wvalid;
   assign wr_fifo_if.w_rd_en = axi4_m.wready & axi4_m.wvalid;
   assign wr_fifo_if.wdata   = axi4_s.wdata                 ;
+  assign wr_fifo_if.wstrb   = axi4_s.wstrb                 ;
   assign axi4_s.wready      = ~wr_fifo_if.w_wr_full        ;
   assign axi4_m.wvalid      = ~wr_fifo_if.w_rd_empty       ;
   assign axi4_m.wdata       =  wr_fifo_if._wdata           ;
+  assign axi4_s.wstrb       =  wr_fifo_if._wstrb           ;
 
   tiny_sync_fifo #(W_W) w_fifo
   ( .wr_full (wr_fifo_if.w_wr_full )
@@ -68,12 +70,10 @@ module axi4_lite_register_slice #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0}
   // ---------------------------------------------------------------------------
   assign wr_fifo_if.b_wr_en = axi4_m.bready & axi4_m.bvalid;
   assign wr_fifo_if.b_rd_en = axi4_s.bready & axi4_s.bvalid;
-  assign wr_fifo_if.wdata   = axi4_m.wdata                 ;
-  assign wr_fifo_if.wstrb   = axi4_m.wstrb                 ;
+  assign wr_fifo_if.bresp   = axi4_m.bresp                 ;
   assign axi4_m.bready      = ~wr_fifo_if.b_wr_full        ;
   assign axi4_s.bvalid      = ~wr_fifo_if.b_rd_empty       ;
-  assign axi4_s.wdata       =  wr_fifo_if._wdata           ;
-  assign axi4_s.wstrb       =  wr_fifo_if._wstrb           ;
+  assign axi4_s.bresp       =  wr_fifo_if._bresp           ;
 
   tiny_sync_fifo #(B_W) b_fifo
   ( .wr_full (wr_fifo_if.b_wr_full  )

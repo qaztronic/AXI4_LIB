@@ -89,14 +89,14 @@ module tiny_sync_fifo #(W=0)
 
   // --------------------------------------------------------------------
   // synthesis translate_off
-  overflow: assert property(@(posedge clk) wr_en & wr_full)
-    $warning("!!! [%8t] | %x %x | wr_en & wr_full", $time, wr_en, wr_full);
+  // overflow: assert property(@(posedge clk) wr_en & wr_full)
+    // $warning("!!! [%8t] | %x %x | wr_en & wr_full", $time, wr_en, wr_full);
 
-  underflow: assert property(@(posedge clk) rd_en & rd_empty)
-    $warning("!!! [%8t] | %x %x | rd_en & rd_empty", $time, rd_en, rd_empty);
+  // underflow: assert property(@(posedge clk) rd_en & rd_empty)
+    // $warning("!!! [%8t] | %x %x | rd_en & rd_empty", $time, rd_en, rd_empty);
     
     
-  initial forever @(posedge clk) $display("@@@ [%8t] | %x %x |  %x %x |  %m |", $time, wr_en, wr_full, rd_en, rd_empty);
+  // initial forever @(posedge clk) $display("@@@ [%8t] | %x %x |  %x %x |  %m |", $time, wr_en, wr_full, rd_en, rd_empty);
   // synthesis translate_on
 // --------------------------------------------------------------------
 endmodule
