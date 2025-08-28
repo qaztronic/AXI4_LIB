@@ -19,18 +19,19 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_pkg::axi4_lite_cfg_t C, int M=0)
 , axi4_lite_if axi4_m[2]
 );
   // ---------------------------------------------------------------------------
-  axi4_bus_rd_fifo_if #(C) s_rd_fifo(.*);
-  axi4_bus_rd_fifos axi4_bus_rd_fifos_i(.axi4_bus(axi4_s), .rd_fifo(s_rd_fifo), .*);
-
+  axi4_lite_if #(C) rs_axi4_m(.*);
+  
+  axi4_lite_register_slice #(C) axi4_lite_register_slice_i(.axi4_m(rs_axi4_m), .*);
+  
   // ---------------------------------------------------------------------------
   localparam D = 4;
   reg [$clog2(D)-1:0] count;
   reg [$clog2(D)-1:0] next_count;
   wire response_done = (count == 0);
-  wire ready = ~(&count);
+  wire ready = aresetn & ~(&count);
 
   always_comb
-    case({s_rd_fifo.ar_rd_en, s_rd_fifo.r_wr_en})
+    case({rs_axi4_m.arready & rs_axi4_m.arvalid, rs_axi4_m.arready & rs_axi4_m.arvalid})
       'b1_0:   next_count = count + 1;
       'b0_1:   next_count = count - 1;
       default: next_count = count;
@@ -43,23 +44,16 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_pkg::axi4_lite_cfg_t C, int M=0)
       count <= next_count;
 
   // ---------------------------------------------------------------------------
-  axi4_bus_rd_fifo_if #(C) m_rd_fifo[2](.*);
-  // axi4_bus_wr_fifo_if #(C) m_wr_fifo[2](.*);
-  // assign m_wr_fifo[0].aw_wr_en = 0;
-  // assign m_wr_fifo[1].aw_wr_en = 0;
-  // assign m_wr_fifo[0].aw_rd_en = 0;
-  // assign m_wr_fifo[1].aw_rd_en = 0;
-  // assign m_wr_fifo[0].b_wr_en = 0;
-  // assign m_wr_fifo[1].b_wr_en = 0;
+  axi4_lite_if #(C) rs_axi4_s[2](.*);
 
   generate
     for(genvar j = 0; j < 2; j++)
-    begin: out_fifos
-        axi4_bus_rd_fifos axi4_bus_rd_fifos_i
-        ( .rd_fifo (m_rd_fifo[j])
-        , .axi4_bus(axi4_m   [j])
-        , .*
-        );
+    begin: register_slices
+      axi4_lite_register_slice #(C) axi4_lite_register_slice_i
+      ( .axi4_s(rs_axi4_s[j])
+      , .axi4_m(axi4_m   [j])
+      , .*
+      );
     end
   endgenerate
 
@@ -77,16 +71,16 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_pkg::axi4_lite_cfg_t C, int M=0)
       state <= next_state;
 
   // ---------------------------------------------------------------------------
-  wire addr_is_lo = (axi4_s.araddr < C.A'(M));
+  wire addr_is_lo = (rs_axi4_m.araddr < C.A'(M));
 
   always_comb
     case(state)
-      LO_ADDR:  if(~addr_is_lo & ~s_rd_fifo.ar_rd_empty & response_done)
+      LO_ADDR:  if(~addr_is_lo & rs_axi4_m.arvalid & response_done)
                   next_state = HI_ADDR;
                 else
                   next_state = LO_ADDR;
 
-      HI_ADDR:  if(addr_is_lo & ~s_rd_fifo.ar_rd_empty & response_done)
+      HI_ADDR:  if( addr_is_lo & rs_axi4_m.arvalid & response_done)
                   next_state = LO_ADDR;
                 else
                   next_state = HI_ADDR;
@@ -95,31 +89,26 @@ module axi4_lite_bus_sunder_rd #(axi4_lite_pkg::axi4_lite_cfg_t C, int M=0)
     endcase
 
   // ---------------------------------------------------------------------------
-  // wire route_lo = ((state == LO_ADDR) & (next_state == LO_ADDR)) | (next_state == LO_ADDR);
-  // wire route_hi = ((state == HI_ADDR) & (next_state == HI_ADDR)) | (next_state == HI_ADDR);
   wire route_lo = (next_state == LO_ADDR);
   wire route_hi = (next_state == HI_ADDR);
 
   // ---------------------------------------------------------------------------
-  assign axi4_m[0].araddr = axi4_s.araddr;
-  assign axi4_m[1].araddr = axi4_s.araddr;
-  assign axi4_s.rdata = route_lo ? axi4_m[0].rdata : axi4_m[1].rdata;
-  assign axi4_s.rresp = route_lo ? axi4_m[0].rresp : axi4_m[1].rresp;
+  assign rs_axi4_s[0].araddr = rs_axi4_m.araddr;
+  assign rs_axi4_s[1].araddr = rs_axi4_m.araddr;
+  assign rs_axi4_m.rdata = route_lo ? rs_axi4_s[0].rdata : rs_axi4_s[1].rdata;
+  assign rs_axi4_m.rresp = route_lo ? rs_axi4_s[0].rresp : rs_axi4_s[1].rresp;
 
   // ---------------------------------------------------------------------------
-  // assign m_rd_fifo[0].ar_wr_en = route_lo & ~full & ~s_rd_fifo.ar_rd_empty & ~m_rd_fifo[0].ar_wr_full;
-  assign axi4_m[0].arvalid    = route_lo & aresetn & ready & ~s_rd_fifo.ar_rd_empty & ~m_rd_fifo[0].ar_wr_full;
-  assign m_rd_fifo[0].r_rd_en = route_lo & aresetn & ready & ~s_rd_fifo.r_wr_full   & ~m_rd_fifo[0].r_rd_empty;
+  assign rs_axi4_s[0].arvalid = route_lo & ready & rs_axi4_m.arvalid;
+  assign    rs_axi4_m.rready  = route_lo & ready & rs_axi4_m.arready;
 
   // ---------------------------------------------------------------------------
-  // assign m_rd_fifo[1].ar_wr_en = route_hi & ~full & ~s_rd_fifo.ar_rd_empty & ~m_rd_fifo[1].ar_wr_full;
-  assign axi4_m[1].arvalid    = route_hi & aresetn & ready & ~s_rd_fifo.ar_rd_empty & ~m_rd_fifo[1].ar_wr_full;
-  assign m_rd_fifo[1].r_rd_en = route_hi & aresetn & ready & ~s_rd_fifo.r_wr_full   & ~m_rd_fifo[1].r_rd_empty;
+  assign rs_axi4_s[1].arvalid = route_hi & ready & rs_axi4_m.arvalid;
+  assign    rs_axi4_m.rready  = route_hi & ready & rs_axi4_m.arready;
 
   // ---------------------------------------------------------------------------
-  // assign s_rd_fifo.ar_rd_en = m_rd_fifo[0].ar_wr_en | m_rd_fifo[1].ar_wr_en;
-  assign s_rd_fifo.ar_rd_en = axi4_m[0].arvalid | axi4_m[1].arvalid;
-  assign s_rd_fifo.r_wr_en  = m_rd_fifo[0].r_rd_en | m_rd_fifo[1].r_rd_en;
+  assign rs_axi4_m.arready = rs_axi4_s[0].arvalid | rs_axi4_s[1].arvalid;
+  assign rs_axi4_m.rready  = rs_axi4_s[0].rready  | rs_axi4_s[0].rready ;
 
 // -----------------------------------------------------------------------------
 endmodule

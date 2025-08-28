@@ -21,7 +21,7 @@
 # ../../../src/axi_lite/axi4_lite_bus_sunder_wr.sv
 ../../../src/axi_lite/axi4_lite_bus_sunder.sv
 
-# ../../../src/axi_lite/axi4_lite_default_slave.sv
+../../../src/axi_lite/axi4_lite_register_slice.sv
 
 #
 # ../../../src/axi_framework/axi4_if.sv

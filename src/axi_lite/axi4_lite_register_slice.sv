@@ -18,8 +18,7 @@ module axi4_lite_register_slice #(axi4_lite_pkg::axi4_lite_cfg_t C='{default: 0}
 , axi4_lite_if axi4_s
 , axi4_lite_if axi4_m
 );
-  // --------------------------------------------------------------------
-  // localparam C = axi4_s.C;
+  // ---------------------------------------------------------------------------
   wire clk     = aclk    ;
   wire reset   = ~aresetn;
 
